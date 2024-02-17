@@ -46,7 +46,7 @@ def sucessors(cur_node, pos, piece):
         return Node(cur_node.depth - 1, 'Black', cur_node.repetition, new_white, cur_node.black)
     
 
+if __name__ == '__main__':
+    print(sucessors(Node(0, 'Black', 1, {1,3,17}, {7,21,23}), 9, 7).black)
 
-print(sucessors(Node(0, 'Black', 1, {1,3,17}, {7,21,23}), 9, 7).black)
-
-print(possible_moves(Node(0, 'Black', 1, {1,3,17}, {7,21,23})))
+    print(possible_moves(Node(0, 'Black', 1, {1,3,17}, {7,21,23})))
