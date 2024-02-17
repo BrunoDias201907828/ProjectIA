@@ -12,6 +12,8 @@ def max_player(cur_node):
 
     #win/lose method
 
+    if 
+
     best_value = -math.inf
 
     possible = possible_moves(cur_node)
