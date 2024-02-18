@@ -39,13 +39,13 @@ def sucessors(cur_node, new_piece, piece):
         new_black = deepcopy(cur_node.black)
         new_black.remove(piece)
         new_black.add(new_piece)
-        return Node(cur_node.depth - 1, 'White', 1, deepcopy(cur_node.white), new_black)
+        return Node(cur_node.depth - 1, cur_node.begin_depth, 'White', 1, deepcopy(cur_node.white), new_black)
     else:
         new_white = deepcopy(cur_node.white)
         new_white.remove(piece)
         new_white.add(new_piece)
 
-        return Node(cur_node.depth - 1, 'Black', 1, new_white, deepcopy(cur_node.black))
+        return Node(cur_node.depth - 1, cur_node.begin_depth, 'Black', 1, new_white, deepcopy(cur_node.black))
     
 
 def is_winner(positions) -> bool:

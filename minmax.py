@@ -3,11 +3,20 @@ from utils import *
 import math
 
 visited = set()
-begin_depth = 6
+
+""" def terminal(node):
+    if node.current_player == 'Black':
+        if is_winner(node.black):
+            return 1
+    else:
+        if is_winner(node.white):
+            return 1
+    return 0
+ """
+#create utility function
 
 
-
-def max_player(cur_node, depth):
+def max_player(cur_node):
 
     best_node = cur_node
 
@@ -32,6 +41,9 @@ def max_player(cur_node, depth):
         return 0, cur_node
 
     #on depth add utility value, temp it's 0
+    #if cur_node.depth == 0 or terminal(node):
+    #    return 0, cur_node
+
     if cur_node.depth == 0:
         return 0, cur_node
 
@@ -44,18 +56,17 @@ def max_player(cur_node, depth):
 
         for new_piece in moves:
             new_node = sucessors(cur_node, new_piece, piece)
-            value, node = min_player(new_node, deepcopy(new_node.depth))
-            if depth == begin_depth:
-                print(node.white, node.black, value, depth)
+            value, node = min_player(new_node)
+
             if value > best_value:
                 best_value = value
-                if depth == begin_depth:
+                if cur_node.depth == cur_node.begin_depth:
                     best_node = node
-                    print("Best node: ", best_node.white, best_node.black, best_value, depth)
+                    print("Best node: ", best_node.white, best_node.black, best_value, cur_node.depth)
 
     return best_value, best_node
 
-def min_player(cur_node, depth):
+def min_player(cur_node):
 
     best_node = cur_node
 
@@ -90,18 +101,21 @@ def min_player(cur_node, depth):
         
         for new_piece in moves:
             new_node = sucessors(cur_node, new_piece, piece)
-            value, node = max_player(new_node, deepcopy(new_node.depth))
-            if depth == begin_depth:
-                print(node.white, node.black, value, depth)
+            value, node = max_player(new_node)
+  
             if value < best_value:
                 best_value = value
-                if depth == begin_depth:
+                if cur_node.depth == cur_node.begin_depth:
                     best_node = node
 
     return best_value, best_node
 
 
-value, node = max_player(Node(begin_depth, 'Black', 1, {1,3,17}, {7,21,23}), begin_depth)
+def minimax(depth, current_player, white, black):    
+    return max_player(Node(depth, depth, current_player, 1, white, black))
+    
 
+#value, node = max_player(Node(6, 6, 'Black', 1, {1,3,17}, {7,21,23}))
+value, node = minimax(6, 'Black', {1,3,17}, {7,21,23})
 print("Value: ", value)
 print("Node: ", node.white, node.black)
