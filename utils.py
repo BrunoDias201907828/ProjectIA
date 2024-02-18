@@ -4,18 +4,14 @@ import itertools
 from copy import deepcopy
 
 
-def possible_moves(cur_node):
-    moves = []
-    if cur_node.current_player == 'Black':
-        for piece in cur_node.black:
-            moves.append((piece, possible(piece, cur_node.black.union(cur_node.white))))
-    else:
-        for piece in cur_node.white:
-            moves.append((piece, possible(piece, cur_node.black.union(cur_node.white))))
-    return moves
+def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
+    """Return a list of possible moves for the current player."""
+    current_player = cur_node.current_player.lower()
+    return [(piece, possible(piece, cur_node.black | cur_node.white)) for piece in getattr(cur_node, current_player)]
 
 
-def possible(piece, pieces):
+@numba.njit
+def _possible(piece: int, pieces: numba.typed.List):
     moves = []
     directions = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
     for direction in directions:
@@ -35,24 +31,27 @@ def possible(piece, pieces):
 
     return moves
 
-#sucessors - takes a pos, new pos and a node and returns a new node with the move made
+
+def possible(piece: int, pieces: set):
+    return _possible(piece, numba.typed.List(pieces))
+
 
 def sucessors(cur_node, new_piece, piece):
+    """takes a pos, new pos and a node and returns a new node with the move made"""
     if cur_node.current_player == 'Black':
-        new_black = deepcopy(cur_node.black)
+        new_black = cur_node.black.copy()
         new_black.remove(piece)
         new_black.add(new_piece)
-        return Node(cur_node.depth - 1, cur_node.begin_depth, 'White', 1, deepcopy(cur_node.white), new_black)
+        return Node(cur_node.depth - 1, cur_node.begin_depth, 'White', 1, cur_node.white.copy(), new_black)
     else:
-        new_white = deepcopy(cur_node.white)
+        new_white = cur_node.white.copy()
         new_white.remove(piece)
         new_white.add(new_piece)
+        return Node(cur_node.depth - 1, cur_node.begin_depth, 'Black', 1, new_white, cur_node.black.copy())
 
-        return Node(cur_node.depth - 1, cur_node.begin_depth, 'Black', 1, new_white, deepcopy(cur_node.black))
-    
 
-def is_winner(positions) -> bool:
-    positions = sorted(positions)
+@numba.njit
+def _is_winner(positions: tuple) -> bool:
     differences = {positions[1] - positions[0], positions[2] - positions[1]}
     if len(differences) != 1:
         return False
@@ -60,6 +59,11 @@ def is_winner(positions) -> bool:
     if value in [1, 5, 4, 6]:  # RIGHT, DOWN, LEFT DOWN, RIGHT DOWN
         return True
     return False
+    
+
+def is_winner(positions: tuple | list | set) -> bool:
+    positions = sorted(positions)
+    return _is_winner(tuple(positions))
 
 
 @numba.njit
@@ -93,3 +97,7 @@ def next_move_score(positions, enemy_position):
             new_positions.add(fp)
             score += int(is_winner(new_positions))
     return score
+
+
+if __name__ == '__main__':
+    print(is_winner([1, 2, 3]))
