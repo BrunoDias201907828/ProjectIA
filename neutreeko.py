@@ -1,6 +1,7 @@
 from utils import *
 import arcade
 from pathlib import Path
+import random
 
 # Screen title and size
 SCREEN_WIDTH = 1280
@@ -138,7 +139,8 @@ class MyGame(arcade.Window):
         if valid:
             return valid
 
-    def on_mouse_press(self, x, y, button, key_modifiers):
+    def on_mouse_press(self, x, y, button, key_modifiers) -> int:
+        piece_moved = 0
         if not self.finished:
             piece = [p for p in arcade.get_sprites_at_point((x, y), self.pieces) if p.team == self.turn]
             if piece:
@@ -151,13 +153,9 @@ class MyGame(arcade.Window):
                 if square and square[0] in self.valid_squares:
                     self.move_piece(square[0])
                     self.change_turn()
+                    piece_moved = 1
 
-                    draw = self.is_draw()
-                    winner = self.get_winner()
-                    if draw:
-                        self.finish_game('Draw')
-                    if winner is not None:
-                        self.finish_game(f'Winner: {winner}')
+                    self.maybe_finish_game()
 
                 self.selected_piece = None
                 self.remove_highlights()
@@ -165,6 +163,15 @@ class MyGame(arcade.Window):
             else:
                 self.selected_piece = None
                 self.remove_highlights()
+            return piece_moved
+
+    def maybe_finish_game(self):
+        draw = self.is_draw()
+        winner = self.get_winner()
+        if draw:
+            self.finish_game('Draw')
+        if winner is not None:
+            self.finish_game(f'Winner: {winner}')
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.R:

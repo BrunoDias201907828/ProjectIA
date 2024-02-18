@@ -34,7 +34,7 @@ def utility_experimental(node, player):
 
 def utility(node, player):
     if is_winner(getattr(node, player.lower())):
-        return 1
+        return 1 + node.depth / 10  # penalize depth (depth is decreasing remember)
     elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
         return -1
     return 0
