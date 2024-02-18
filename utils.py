@@ -1,13 +1,14 @@
 from node import Node
+from copy import deepcopy
 
 def possible_moves(cur_node):
     moves = []
     if cur_node.current_player == 'Black':
         for piece in cur_node.black:
-            moves.append(piece, possible(piece, cur_node.black.union(cur_node.white)))
+            moves.append((piece, possible(piece, cur_node.black.union(cur_node.white))))
     else:
         for piece in cur_node.white:
-            moves.append(piece, possible(piece, cur_node.black.union(cur_node.white)))
+            moves.append((piece, possible(piece, cur_node.black.union(cur_node.white))))
     return moves
 
 
@@ -33,20 +34,26 @@ def possible(piece, pieces):
 
 #sucessors - takes a pos, new pos and a node and returns a new node with the move made
 
-def sucessors(cur_node, pos, piece):
+def sucessors(cur_node, new_piece, piece):
     if cur_node.current_player == 'Black':
-        new_black = cur_node.black.copy()
+        new_black = deepcopy(cur_node.black)
         new_black.remove(piece)
-        new_black.add(pos)
-        return Node(cur_node.depth - 1, 'White', cur_node.repetition, cur_node.white, new_black)
+        new_black.add(new_piece)
+        return Node(cur_node.depth - 1, 'White', 1, deepcopy(cur_node.white), new_black)
     else:
-        new_white = cur_node.white.copy()
+        new_white = deepcopy(cur_node.white)
         new_white.remove(piece)
-        new_white.add(pos)
-        return Node(cur_node.depth - 1, 'Black', cur_node.repetition, new_white, cur_node.black)
+        new_white.add(new_piece)
+
+        return Node(cur_node.depth - 1, 'Black', 1, new_white, deepcopy(cur_node.black))
     
 
-if __name__ == '__main__':
-    print(sucessors(Node(0, 'Black', 1, {1,3,17}, {7,21,23}), 9, 7).black)
-
-    print(possible_moves(Node(0, 'Black', 1, {1,3,17}, {7,21,23})))
+def is_winner(positions) -> bool:
+    positions = sorted(positions)
+    differences = {positions[1] - positions[0], positions[2] - positions[1]}
+    if len(differences) != 1:
+        return False
+    value = differences.pop()
+    if value in [1, 5, 4, 6]:  # RIGHT, DOWN, LEFT DOWN, RIGHT DOWN
+        return True
+    return False

@@ -1,4 +1,4 @@
-from utils import possible
+from utils import *
 import arcade
 from pathlib import Path
 
@@ -62,21 +62,10 @@ class MyGame(arcade.Window):
         self.state_counter[key] = new_value
         return False
 
-    @staticmethod
-    def is_winner(positions) -> bool:
-        positions = sorted(positions)
-        differences = {positions[1] - positions[0], positions[2] - positions[1]}
-        if len(differences) != 1:
-            return False
-        value = differences.pop()
-        if value in [1, 5, 4, 6]:  # RIGHT, DOWN, LEFT DOWN, RIGHT DOWN
-            return True
-        return False
-
     def get_winner(self) -> str | None:
-        if self.is_winner(self.get_black_positions()):
+        if is_winner(self.get_black_positions()):
             return 'black'
-        if self.is_winner(self.get_white_positions()):
+        if is_winner(self.get_white_positions()):
             return 'white'
 
     def setup(self):
