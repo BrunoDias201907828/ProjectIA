@@ -52,14 +52,14 @@ def sucessors(cur_node, new_piece, piece):
 
 @numba.njit
 def _is_winner(positions: tuple) -> bool:
-    differences = {positions[1] - positions[0], positions[2] - positions[1]}
-    if len(differences) != 1:
+    xs = [p % 5 for p in positions]
+    ys = [p // 5 for p in positions]
+    dx = {xs[1] - xs[0], xs[2] - xs[1]}
+    dy = {ys[1] - ys[0], ys[2] - ys[1]}
+    if len(dx) == 2 or len(dy) == 2 or dy.pop() > 1 or abs(dx.pop()) > 1:
         return False
-    value = differences.pop()
-    if value in [1, 5, 4, 6]:  # RIGHT, DOWN, LEFT DOWN, RIGHT DOWN
-        return True
-    return False
-    
+    return True
+
 
 def is_winner(positions: tuple | list | set) -> bool:
     positions = sorted(positions)
@@ -100,4 +100,4 @@ def next_move_score(positions, enemy_position):
 
 
 if __name__ == '__main__':
-    print(is_winner([1, 2, 3]))
+    print(is_winner([19, 15, 23]))
