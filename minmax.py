@@ -83,7 +83,7 @@ def min_value_experimental(node: Node, player: str):
     return value, move
 
 
-def minimax_experimental(white: set, black: set, player: str, depth: int = 5):
+def minimax_experimental(white: set, black: set, player: str, depth: int = 4):
     node = Node(white=white, black=black, depth=depth, begin_depth=None, current_player=player, repetition=1)
     return max_value_experimental(node, player)
 

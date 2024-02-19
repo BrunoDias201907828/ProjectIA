@@ -37,11 +37,11 @@ class Piece(arcade.Sprite):
         super().__init__(str(self.path), scale, center_x=self.square.center_x, center_y=self.square.center_y)
 
 
-class MyGame(arcade.Window):
+class Neutreeko(arcade.Window):
     """ Main application class. """
 
-    def __init__(self):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    def __init__(self, name='Neutreeko'):
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, name)
 
         self.turn = None
         self.selected_piece = None
@@ -180,7 +180,7 @@ class MyGame(arcade.Window):
 
 def main():
     """ Main function """
-    window = MyGame()
+    window = Neutreeko()
     window.setup()
     arcade.run()
 
