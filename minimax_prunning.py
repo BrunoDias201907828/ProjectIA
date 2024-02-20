@@ -1,5 +1,5 @@
 from node import Node
-from minmax import utility, update_visited_states, is_terminal, possible_moves, perform_action
+from minmax import eval, update_visited_states, is_terminal, possible_moves, perform_action
 import math
 import time
 
@@ -7,7 +7,7 @@ import time
 def max_value(node: Node, player: str, alpha: float, beta: float):
     update_visited_states(node)
     if is_terminal(node):
-        return utility(node, player), None
+        return eval(node, player), None
     value, move = -math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
@@ -23,7 +23,7 @@ def max_value(node: Node, player: str, alpha: float, beta: float):
 def min_value(node: Node, player: str, alpha: float, beta: float):
     update_visited_states(node)
     if is_terminal(node):
-        return utility(node, player), None
+        return eval(node, player), None
     value, move = +math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
