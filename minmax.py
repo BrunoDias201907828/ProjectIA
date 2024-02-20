@@ -39,7 +39,6 @@ def perform_action(node, position, new_position):
     new_positions.remove(position)
     new_positions.add(new_position)
     repetition = get_repetitions(node)
-    M = max(M, repetition)
     if player == 'black':
         return Node(white=node.white.copy(), black=new_positions, depth=node.depth - 1, current_player='White',
                     repetition=repetition, parent=node)

@@ -1,11 +1,10 @@
 from node import Node
-from minmax import eval, update_visited_states, is_terminal, possible_moves, perform_action
+from minmax import eval, is_terminal, possible_moves, perform_action
 import math
 import time
 
 
 def max_value(node: Node, player: str, alpha: float, beta: float):
-    update_visited_states(node)
     if is_terminal(node):
         return eval(node, player), None
     value, move = -math.inf, None
@@ -21,7 +20,6 @@ def max_value(node: Node, player: str, alpha: float, beta: float):
 
 
 def min_value(node: Node, player: str, alpha: float, beta: float):
-    update_visited_states(node)
     if is_terminal(node):
         return eval(node, player), None
     value, move = +math.inf, None
@@ -33,11 +31,11 @@ def min_value(node: Node, player: str, alpha: float, beta: float):
                 beta = min(beta, value)
             if value <= alpha:
                 return value, move
-    return value, move #move is a tupple with position of the piece (startpos you want to play and endpos) 0-24
+    return value, move  # move is a tupple with position of the piece (startpos you want to play and endpos) 0-24
 
 
 def minimax_pruning(white: set, black: set, player: str, depth: int = 6):
-    node = Node(white=white, black=black, depth=depth, begin_depth=None, current_player=player, repetition=1)
+    node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf)
 
 
