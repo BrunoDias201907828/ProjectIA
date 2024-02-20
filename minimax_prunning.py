@@ -33,7 +33,7 @@ def min_value(node: Node, player: str, alpha: float, beta: float):
                 beta = min(beta, value)
             if value <= alpha:
                 return value, move
-    return value, move
+    return value, move #move is a tupple with position of the piece (startpos you want to play and endpos) 0-24
 
 
 def minimax_pruning(white: set, black: set, player: str, depth: int = 6):
