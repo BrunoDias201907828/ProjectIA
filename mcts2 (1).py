@@ -121,18 +121,19 @@ class MCTS:
         Returns:
             MCTSNode: The new child node representing the game state after applying the action.
         """
-        # Make a copy of the current game state
-        current_player,copy_white, copy_black = node.get_state().copy()
+        # Make a copy of the node and get the current game state
+        copy_node = node.copy()
+        current_player,copy_white, copy_black = copy_node.get_state()
 
         # Update the game state based on the action
         piece, new_piece = action
         if current_player == 'Black':
-            copy_black.remove(piece) #remove that piece from the set -- THESE METHODS NEED TO BE ADDED
-            copy_black.add(new_piece)#add that piece to the set      -- THESE METHODS NEED TO BE ADDED
+            copy_black.add(current_player, piece, new_piece) #remove that piece from the set -- THESE METHODS NEED TO BE ADDED
+                 
             current_player = 'White' #switch
         else:
-            copy_white.remove(piece)
-            copy_white.add(new_piece)
+            copy_white.add(current_player, piece, new_piece) #remove that piece from the set -- THESE METHODS NEED TO BE ADDED
+            
             current_player = 'Black'
 
         child = MCTSNode(current_player=current_player, white=copy_white, black=copy_black, repetition=node.repetition, parent=node)
@@ -140,9 +141,17 @@ class MCTS:
         # Create and return a new child node with the updated game state
         return child
         
+    def add(piece_colour, node): #maybe call it substitute?
+        if current_player == 'Black':
+            return node.black = set()
+        else:
+            return node.white = set()
+        
+
     def run_simulations(self, node):
         """
         Run random simulations from the given node until reaching a terminal state.
+        Using random_actions
 
         Args:
             node (MCTSNode): The node to start the simulations from.
@@ -150,12 +159,12 @@ class MCTS:
         while not node.is_terminal():
             # Perform a random action
             action = self.random_action(node)
-            node = self.perform_action(node, action)    
-        return node
+            child_node = self.perform_action(node, action)    
+        return child_node #this child node is a terminal node
     
     def simulate(self, node, simulations):
         """
-        Simulate the game from the current node until the end and return the result (e.g., win/loss) using random moves.
+        Simulate the game from the current node until the end and return the result (e.g., win/loss) currently using random moves.
         
         Args:
             node (MCTSNode): The node to start the simulation from.
@@ -171,8 +180,7 @@ class MCTS:
             # Run random simulations until reaching a terminal state
             end_node=self.run_simulations(current_node)
             
-            # Determine the result of the simulation
-            current_player, _, _ = end_node.get_state()
+            
             if is_winner(self.mcts_player):
                 return 1.0  # Current player wins
             elif is_winner(self.opposite_player):
@@ -198,11 +206,6 @@ class MCTS:
         for node in reversed(self.branch):
             node.visit_count += 1
             node.win_score += result
-
-
-  
-
-    
     
     #This is the main loop:
     def search(self, iterations):

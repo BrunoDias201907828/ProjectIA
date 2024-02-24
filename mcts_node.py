@@ -13,10 +13,17 @@ class MCTSNode:
         self.visit_count = 1
         self.win_score = 0
     
-    def repeated_state(self):
-        """Checks if state has been repeated 3 times"""
-        pass
-        
+    #def repeated_state(self):
+        #"""Checks if state has been repeated 3 times"""
+        #self.parent.visit_count += 1
+      
+        #return
+        #def is_draw(self):
+          #if self.parent.visit_count >=3:
+            #return True
+        #return False
+    
+    
     def is_terminal(self):
         """Checks whether there is a winner"""
         return is_winner(self.black) or is_winner(self.white) or self.repetition >= 3 #checks if there is a win or a draw

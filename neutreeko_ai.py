@@ -1,6 +1,7 @@
 from neutreeko import Neutreeko
 from minmax import minimax_experimental
 from minimax_prunning import minimax_pruning
+from mcts2 import montecarlo_treesearch
 import arcade
 import random
 import argparse
@@ -11,7 +12,7 @@ class NeutreekoAI(Neutreeko):
         super().__init__(name='Neutreeko - Human vs AI')
         self.ai_turn = None
         self.mode = mode
-        self.ai_fn = {'minimax_pruning': minimax_pruning, 'minimax': minimax_experimental}[mode]
+        self.ai_fn = {'minimax_pruning': minimax_pruning, 'minimax': minimax_experimental, 'mcts': montecarlo_treesearch}[mode]
 
     def setup(self):
         super().setup()
@@ -39,8 +40,8 @@ class NeutreekoAI(Neutreeko):
 def main():
     parser = argparse.ArgumentParser(description='Neutreeko AI Game Mode')
     parser.add_argument('-m', '--mode', type=str, default='minimax_pruning',
-                        choices=['minimax_pruning', 'minimax'],
-                        help='AI mode (minimax_pruning or minimax)')
+                        choices=['minimax_pruning', 'minimax', 'mcts'],
+                        help='AI mode (minimax_pruning or minimax or monte_carlo_tree_search)')
 
     args = parser.parse_args()
     window = NeutreekoAI(mode=args.mode)
