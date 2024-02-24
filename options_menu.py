@@ -73,7 +73,9 @@ def launch_game(n_clicks, game_mode, ai_type_1, ai_type_2):
         elif game_mode == 'HvAI':
             ai_agent = {'Minimax': 'minimax', 'AlphaBeta': 'minimax_pruning', 'MCTS': None}[ai_type_1]
             if ai_agent is not None:
-                os.system(f'python neutreeko_ai.py -m {ai_agent}')
+                v = os.system(f'python3 neutreeko_ai.py -m {ai_agent}')
+                if v != 1:
+                    os.system(f'python neutreeko_ai.py -m {ai_agent}')
             else:
                 raise NotImplementedError
         else:
