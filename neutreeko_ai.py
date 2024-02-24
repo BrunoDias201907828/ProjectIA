@@ -36,11 +36,10 @@ class NeutreekoAI(Neutreeko):
             self.ai_move()
 
     def ai_move(self):
-        print("thinking...")
         self.ai_running = True
-        self.on_draw()
         turn_text = f"{self.turn.capitalize()}'s Turn"
         arcade.draw_text(turn_text, self.width // 2, self.height - 50, arcade.color.BLACK, 24, anchor_x="center")
+        self.on_draw()
         _, move, _ = self.ai_fn(set(self.get_white_positions()), set(self.get_black_positions()), self.turn,
                                 played_moves=self.state_counter)
         self.selected_piece = [piece for piece in self.pieces if piece.square.number == move[0]][0]
@@ -51,7 +50,6 @@ class NeutreekoAI(Neutreeko):
         self.maybe_finish_game()
         self.ai_running = False
         self.on_draw()
-        print("done")
 
 
 def main():
