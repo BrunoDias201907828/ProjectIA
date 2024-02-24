@@ -52,6 +52,7 @@ class Neutreeko(arcade.Window):
         self.state_counter = None
         self.finished = None
         self.end_game_message = None
+        self.end_game_message_size = 96
 
         arcade.set_background_color(arcade.color.BABY_BLUE)
 
@@ -100,7 +101,7 @@ class Neutreeko(arcade.Window):
         self.valid_squares_sprite.draw()
         if self.finished and self.end_game_message:
             arcade.draw_text(self.end_game_message, self.width // 2, self.height // 2, arcade.color.RED_BROWN,
-                             font_size=96, anchor_x="center", bold=True)
+                             font_size=self.end_game_message_size, anchor_x="center", bold=True)
         else:
             turn_text = f"{self.turn.capitalize()}'s Turn"
             arcade.draw_text(turn_text, self.width // 2, self.height - 50, arcade.color.BLACK, 24, anchor_x="center")

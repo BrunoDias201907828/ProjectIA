@@ -1,11 +1,8 @@
 import os
-
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
-from neutreeko import Neutreeko
-from neutreeko_ai import NeutreekoAI
-import multiprocessing
+AI_AGENT_MAPPER = {'Minimax': 'Minimax', 'AlphaBeta': 'MinimaxPruning', 'MCTS': None}
 
 app = dash.Dash(__name__)
 
@@ -69,17 +66,25 @@ def update_ai_selection(game_mode):
 def launch_game(n_clicks, game_mode, ai_type_1, ai_type_2):
     if n_clicks > 0:
         if game_mode == 'HvH':
-            os.system('python neutreeko.py')
+            v = os.system('python neutreeko.py')
+            if v != 0:
+                os.system('python3 neutreeko.py')
         elif game_mode == 'HvAI':
-            ai_agent = {'Minimax': 'minimax', 'AlphaBeta': 'minimax_pruning', 'MCTS': None}[ai_type_1]
+            ai_agent = AI_AGENT_MAPPER[ai_type_1]
             if ai_agent is not None:
                 v = os.system(f'python3 neutreeko_ai.py -m {ai_agent}')
-                if v != 1:
+                if v != 0:
                     os.system(f'python neutreeko_ai.py -m {ai_agent}')
             else:
                 raise NotImplementedError
         else:
-            raise NotImplementedError
+            ai_agent1, ai_agent2 = AI_AGENT_MAPPER[ai_type_1], AI_AGENT_MAPPER[ai_type_2]
+            if ai_agent1 is not None and ai_agent2 is not None:
+                v = os.system(f'python3 neutreeko_ai_vs_ai.py -a1 {ai_agent1} -a2 {ai_agent2}')
+                if v != 0:
+                    os.system(f'python neutreeko_ai_vs_ai.py -a1 {ai_agent1} -a2 {ai_agent2}')
+            else:
+                raise NotImplementedError
     return 0
 
 
