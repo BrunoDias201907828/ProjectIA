@@ -3,6 +3,7 @@ from neutreeko import Neutreeko
 from minmax import minimax
 from minimax_prunning import minimax_pruning
 import numpy as np
+import argparse
 import time
 
 
@@ -23,7 +24,6 @@ class NeutreekoAIvsAI(Neutreeko):
     def setup(self):
         super().setup()
         self.algorithm_index = np.random.choice([1, 2])
-        print(self.algorithm_names[self.algorithm_index])
         self.started = False
         self.display_running = False
 
@@ -48,7 +48,6 @@ class NeutreekoAIvsAI(Neutreeko):
         self.algorithm_index = 1 if self.algorithm_index == 2 else 2
 
     def ai_move(self):
-        print(self.algorithm_names[self.algorithm_index])
         ai_fn = self.algorithms[self.algorithm_index]
         _, move, _ = ai_fn(set(self.get_white_positions()), set(self.get_black_positions()), self.turn,
                            played_moves=self.state_counter)
@@ -63,6 +62,14 @@ class NeutreekoAIvsAI(Neutreeko):
 
 
 if __name__ == '__main__':
-    game = NeutreekoAIvsAI('Minimax', 'MinimaxPruning')
+    parser = argparse.ArgumentParser(description='Neutreeko AI vs AI Game Mode')
+    parser.add_argument('-a1', '--algorithm1', type=str, default='minimax_pruning',
+                        choices=['MinimaxPruning', 'Minimax', 'mcts'],
+                        help='AI mode (minimax_pruning or minimax or monte_carlo_tree_search)')
+    parser.add_argument('-a2', '--algorithm2', type=str, default='minimax_pruning',
+                        choices=['MinimaxPruning', 'Minimax', 'mcts'],
+                        help='AI mode (minimax_pruning or minimax or monte_carlo_tree_search)')
+    args = parser.parse_args()
+    game = NeutreekoAIvsAI(args.algorithm1, args.algorithm2)
     game.setup()
     game.run()
