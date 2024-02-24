@@ -66,6 +66,7 @@ def is_winner(positions: tuple | list | set) -> bool:
     return _is_winner(tuple(positions))
 
 
+
 @numba.njit
 def _distance_score(pairs):
     score = 0
@@ -128,6 +129,19 @@ def is_draw(node, played_moves, first=False):
         repetition = played_moves.get(key, 0)
     return repetition >= 3
 
+
+def perform_action(node, position, new_position):
+    player = node.current_player.lower()
+    new_positions = getattr(node, player).copy()
+    new_positions.remove(position)
+    new_positions.add(new_position)
+    repetition = get_repetitions(node)
+    if player == 'black':
+        return Node(white=node.white.copy(), black=new_positions, depth=node.depth - 1, current_player='White',
+                    repetition=repetition, parent=node)
+    else:
+        return Node(white=new_positions, black=node.black.copy(), depth=node.depth - 1, current_player='Black',
+                    repetition=repetition, parent=node)
 
 def perform_action(node, position, new_position):
     player = node.current_player.lower()
