@@ -1,5 +1,5 @@
 from neutreeko import Neutreeko
-from minmax import minimax_experimental
+from minmax import minimax
 from minimax_prunning import minimax_pruning
 from mcts2 import montecarlo_treesearch
 import arcade
@@ -12,7 +12,7 @@ class NeutreekoAI(Neutreeko):
         super().__init__(name='Neutreeko - Human vs AI')
         self.ai_turn = None
         self.mode = mode
-        self.ai_fn = {'minimax_pruning': minimax_pruning, 'minimax': minimax_experimental, 'mcts': montecarlo_treesearch}[mode]
+        self.ai_fn = {'minimax_pruning': minimax_pruning, 'minimax': minimax}[mode]
 
     def setup(self):
         super().setup()
@@ -27,7 +27,8 @@ class NeutreekoAI(Neutreeko):
 
     def ai_move(self):
         print("thinking...")
-        _, move = self.ai_fn(set(self.get_white_positions()), set(self.get_black_positions()), self.turn)
+        _, move, _ = self.ai_fn(set(self.get_white_positions()), set(self.get_black_positions()), self.turn,
+                                played_moves=self.state_counter)
         self.selected_piece = [piece for piece in self.pieces if piece.square.number == move[0]][0]
         self.move_piece(self.squares[move[1]])
         self.change_turn()

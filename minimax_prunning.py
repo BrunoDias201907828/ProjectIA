@@ -1,17 +1,16 @@
 from node import Node
-from minmax import utility, update_visited_states, is_terminal, possible_moves, perform_action
+from minmax import eval, is_terminal, possible_moves, perform_action, update_played_moves
 import math
 import time
 
 
-def max_value(node: Node, player: str, alpha: float, beta: float):
-    update_visited_states(node)
-    if is_terminal(node):
-        return utility(node, player), None
+def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False):
+    if is_terminal(node, played_moves, _first):
+        return eval(node, player), None
     value, move = -math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
-            value2, _ = min_value(perform_action(node, position, new_position), player, alpha, beta)
+            value2, _ = min_value(perform_action(node, position, new_position), player, alpha, beta, played_moves)
             if value2 > value:
                 value, move = value2, (position, new_position)
                 alpha = max(alpha, value)
@@ -20,29 +19,27 @@ def max_value(node: Node, player: str, alpha: float, beta: float):
     return value, move
 
 
-def min_value(node: Node, player: str, alpha: float, beta: float):
-    update_visited_states(node)
-    if is_terminal(node):
-        return utility(node, player), None
+def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict):
+    if is_terminal(node, played_moves):
+        return eval(node, player), None
     value, move = +math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
-            value2, _ = max_value(perform_action(node, position, new_position), player, alpha, beta)
+            value2, _ = max_value(perform_action(node, position, new_position), player, alpha, beta, played_moves)
             if value2 < value:
                 value, move = value2, (position, new_position)
                 beta = min(beta, value)
             if value <= alpha:
                 return value, move
-    return value, move #move is a tupple with position of the piece (startpos you want to play and endpos) 0-24
+    return value, move  # move is a tupple with position of the piece (startpos you want to play and endpos) 0-24
 
 
-def minimax_pruning(white: set, black: set, player: str, depth: int = 6):
-    node = Node(white=white, black=black, depth=depth, begin_depth=None, current_player=player, repetition=1)
-    return max_value(node, player, -math.inf, math.inf)
+@update_played_moves
+def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6):
+    node = Node(white=white, black=black, depth=depth, current_player=player)
+    return max_value(node, player, -math.inf, math.inf, played_moves, _first=True)
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    value, move = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=6)
-    print(time.time() - t0)
-    print(value, move)
+    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=6)

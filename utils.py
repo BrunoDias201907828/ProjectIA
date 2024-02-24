@@ -99,5 +99,73 @@ def next_move_score(positions, enemy_position):
     return score
 
 
+def eval_experimental(node, player):
+    positions = getattr(node, player.lower())
+    return distance_score(positions)
+
+
+def eval(node, player):
+    if is_winner(getattr(node, player.lower())):
+        return 1 + node.depth / 10  # penalize depth (depth is decreasing remember)
+    elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
+        return -1
+    return 0
+
+
+def is_terminal(node, played_moves, first=False):
+    key = (frozenset(node.white), frozenset(node.black))
+    if not first:
+        repetition = node.repetition + played_moves.get(key, 0)
+    else:
+        repetition = played_moves.get(key, 0)
+    return any([is_winner(node.black), is_winner(node.white)]) or repetition >= 3 or node.depth == 0
+
+
+def perform_action(node, position, new_position):
+    player = node.current_player.lower()
+    new_positions = getattr(node, player).copy()
+    new_positions.remove(position)
+    new_positions.add(new_position)
+    repetition = get_repetitions(node)
+    if player == 'black':
+        return Node(white=node.white.copy(), black=new_positions, depth=node.depth - 1, current_player='White',
+                    repetition=repetition, parent=node)
+    else:
+        return Node(white=new_positions, black=node.black.copy(), depth=node.depth - 1, current_player='Black',
+                    repetition=repetition, parent=node)
+
+
+def get_repetitions(node: Node):
+    key = (frozenset(node.white), frozenset(node.black))
+    repetition = 1
+    parent_node = node.parent
+    while True:
+        if parent_node is None:
+            break
+        if (frozenset(parent_node.white), frozenset(parent_node.black)) == key:
+            repetition = parent_node.repetition + 1
+            break
+        parent_node = parent_node.parent
+    return repetition
+
+
+def update_played_moves(fn):
+    def inner(white: set, black: set, player: str, *args, played_moves: dict | None = None, **kwargs):
+        if played_moves is None:  # consider first move
+            played_moves = {(frozenset(white), frozenset(black)): 1}
+        value, move = fn(white, black, player, played_moves, *args, **kwargs)
+
+        white, black = white.copy(), black.copy()
+        set_changed = white if player.lower() == 'white' else black
+        set_changed.remove(move[0])
+        set_changed.add(move[1])
+
+        key = (frozenset(white), frozenset(black))
+        new_played_moves = played_moves.copy()
+        new_played_moves[key] = played_moves.get(key, 0) + 1
+        return value, move, new_played_moves
+    return inner
+
+
 if __name__ == '__main__':
     print(is_winner([19, 15, 23]))

@@ -56,7 +56,7 @@ class Neutreeko(arcade.Window):
         arcade.set_background_color(arcade.color.BABY_BLUE)
 
     def is_draw(self) -> bool:
-        key = (frozenset(self.get_black_positions()), frozenset(self.get_white_positions()))
+        key = (frozenset(self.get_white_positions()), frozenset(self.get_black_positions()))
         new_value = self.state_counter.get(key, 0) + 1
         if new_value == 3:
             return True
