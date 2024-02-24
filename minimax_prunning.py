@@ -6,7 +6,7 @@ import time
 
 def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False):
     if is_terminal(node, played_moves, _first):
-        return eval(node, player), None
+        return eval(node, player, played_moves, first=_first), None
     value, move = -math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
@@ -21,7 +21,7 @@ def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict):
     if is_terminal(node, played_moves):
-        return eval(node, player), None
+        return eval(node, player, played_moves), None
     value, move = +math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:

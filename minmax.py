@@ -5,7 +5,7 @@ import math
 
 def max_value(node: Node, player: str, played_moves: dict, _first=False):
     if is_terminal(node, played_moves, first=_first):
-        return eval(node, player), None
+        return eval(node, player, played_moves, first=_first), None
     value, move = -math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
@@ -17,7 +17,7 @@ def max_value(node: Node, player: str, played_moves: dict, _first=False):
 
 def min_value(node: Node, player: str, played_moves: dict):
     if is_terminal(node, played_moves):
-        return eval(node, player), None
+        return eval(node, player, played_moves), None
     value, move = +math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
@@ -28,7 +28,7 @@ def min_value(node: Node, player: str, played_moves: dict):
 
 
 @update_played_moves
-def minimax(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 2):
+def minimax(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 4):
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, played_moves, _first=True)
 

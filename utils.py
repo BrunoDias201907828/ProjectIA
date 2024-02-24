@@ -104,21 +104,29 @@ def eval_experimental(node, player):
     return distance_score(positions)
 
 
-def eval(node, player):
+def eval(node, player, played_moves, first=False):
+    depth_penalty = 1 - node.depth / 10
+    value = 0
     if is_winner(getattr(node, player.lower())):
-        return 1 + node.depth / 10  # penalize depth (depth is decreasing remember)
+        value = 2 - depth_penalty  # Later wins are less rewarded
     elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
-        return -1
-    return 0
+        value = -2 + depth_penalty  # Later loses are less penalized
+    elif is_draw(node, played_moves, first):
+        value = -1 + depth_penalty  # Later draws are less penalized
+    return value
 
 
 def is_terminal(node, played_moves, first=False):
+    return any([is_winner(node.black), is_winner(node.white)]) or is_draw(node, played_moves, first) or node.depth == 0
+
+
+def is_draw(node, played_moves, first=False):
     key = (frozenset(node.white), frozenset(node.black))
     if not first:
         repetition = node.repetition + played_moves.get(key, 0)
     else:
         repetition = played_moves.get(key, 0)
-    return any([is_winner(node.black), is_winner(node.white)]) or repetition >= 3 or node.depth == 0
+    return repetition >= 3
 
 
 def perform_action(node, position, new_position):
