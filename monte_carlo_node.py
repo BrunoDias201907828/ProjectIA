@@ -1,5 +1,5 @@
 class Node:
-    def __init__(self, current_player = 'Black', repetition = 1, white = {1,3,17}, black = {7,21,23}, parent=None):
+    def __init__(self, depth, current_player = 'Black', repetition = 1, white = {1,3,17}, black = {7,21,23}, parent=None):
         self.white = white
         self.black = black
         self.repetition = repetition
@@ -7,7 +7,8 @@ class Node:
         self.parent = parent
         self.children = []
         self.visits = 0
-        self.wins = 0
+        self.utility = 0
+        self.depth = depth
 
     def add_child(self, child):
         self.children.append(child)

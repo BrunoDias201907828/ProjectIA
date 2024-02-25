@@ -15,6 +15,7 @@ def get_repetitions(node: Node):
         parent_node = parent_node.parent
     return repetition
 
+
 def perform_action_mcts(node, position, new_position):
     player = node.current_player.lower()
     new_positions = getattr(node, player).copy()
@@ -22,9 +23,12 @@ def perform_action_mcts(node, position, new_position):
     new_positions.add(new_position)
     repetition = get_repetitions(node)
     if player == 'black':
-        return Node(white=node.white.copy(), black=new_positions, current_player='White', repetition=repetition, parent=node)
+        return Node(white=node.white.copy(), black=new_positions, depth=node.depth - 1, current_player='White',
+                    repetition=repetition, parent=node)
     else:
-        return Node(white=new_positions, black=node.black.copy(), current_player='Black', repetition=repetition, parent=node)
+        return Node(white=new_positions, black=node.black.copy(), depth=node.depth - 1, current_player='Black',
+                    repetition=repetition, parent=node)
+
     
 def is_draw(node, played_moves, first=False):
     key = (frozenset(node.white), frozenset(node.black))
@@ -51,13 +55,3 @@ def is_winner(positions: tuple | list | set) -> bool:
 def is_terminal(node, played_moves, first=False):
     return any([is_winner(node.black), is_winner(node.white)]) or is_draw(node, played_moves, first) or node.depth == 0
 
-def eval(node, player, played_moves, first=False):
-    depth_penalty = 1 - node.depth / 10
-    value = 0
-    if is_winner(getattr(node, player.lower())):
-        value = 2 - depth_penalty  # Later wins are less rewarded
-    elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
-        value = -2 + depth_penalty  # Later loses are less penalized
-    elif is_draw(node, played_moves, first):
-        value = -1 + depth_penalty  # Later draws are less penalized
-    return value
