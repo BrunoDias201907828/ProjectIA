@@ -1,7 +1,6 @@
 from node import Node
 import numba
 import itertools
-from copy import deepcopy
 
 
 def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
@@ -11,7 +10,7 @@ def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
 
 
 @numba.njit
-def _possible(piece: int, pieces: numba.typed.List):
+def _possible(piece: int, pieces: tuple):
     moves = []
     directions = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, 1), (1, -1), (-1, -1)]
     for direction in directions:
@@ -33,7 +32,7 @@ def _possible(piece: int, pieces: numba.typed.List):
 
 
 def possible(piece: int, pieces: set):
-    return _possible(piece, numba.typed.List(pieces))
+    return _possible(piece, tuple(pieces))
 
 
 def sucessors(cur_node, new_piece, piece):
@@ -159,10 +158,10 @@ def get_repetitions(node: Node):
 
 
 def update_played_moves(fn):
-    def inner(white: set, black: set, player: str, *args, played_moves: dict | None = None, **kwargs):
+    def inner(white: set, black: set, player: str, played_moves: dict | None = None, **kwargs):
         if played_moves is None:  # consider first move
             played_moves = {(frozenset(white), frozenset(black)): 1}
-        value, move = fn(white, black, player, played_moves, *args, **kwargs)
+        value, move = fn(white, black, player, played_moves, **kwargs)
 
         white, black = white.copy(), black.copy()
         set_changed = white if player.lower() == 'white' else black
