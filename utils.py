@@ -1,6 +1,5 @@
 from node import Node
 import numba
-import itertools
 
 
 def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
@@ -63,45 +62,6 @@ def _is_winner(positions: tuple) -> bool:
 def is_winner(positions: tuple | list | set) -> bool:
     positions = sorted(positions)
     return _is_winner(tuple(positions))
-
-
-
-@numba.njit
-def _distance_score(pairs):
-    score = 0
-    for (p0, p1) in pairs:
-        x0, y0 = p0 % 5, p0 // 5
-        x1, y1 = p1 % 5, p1 // 5
-        dx = abs(x1 - x0)
-        dy = abs(y1 - y0)
-        if dx == 0 or dy == 0 or dx == dy:
-            if dx == 1 or dy == 1:
-                score += 3
-            else:
-                score += 1
-    return score
-
-
-def distance_score(positions):
-    positions = tuple(positions)
-    return _distance_score(tuple(itertools.combinations(positions, 2)))
-
-
-def next_move_score(positions, enemy_position):
-    score = 0
-    for p in positions:
-        future_positions = possible(p, positions | enemy_position)
-        for fp in future_positions:
-            new_positions = positions.copy()
-            new_positions.remove(p)
-            new_positions.add(fp)
-            score += int(is_winner(new_positions))
-    return score
-
-
-def eval_experimental(node, player):
-    positions = getattr(node, player.lower())
-    return distance_score(positions)
 
 
 def eval(node, player, played_moves, first=False):
