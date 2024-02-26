@@ -2,7 +2,7 @@ import os
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
-AI_AGENT_MAPPER = {'Minimax': 'Minimax', 'AlphaBeta': 'MinimaxPruning', 'MCTS': None}
+AI_AGENT_MAPPER = {'Minimax': 'Minimax', 'AlphaBeta': 'MinimaxPruning', 'MCTS': 'MonteCarlo'}
 
 app = dash.Dash(__name__)
 
@@ -23,7 +23,7 @@ app.layout = html.Div([
             options=[
                 {'label': 'Minimax', 'value': 'Minimax'},
                 {'label': 'Minimax Alpha-Beta Cut', 'value': 'AlphaBeta'},
-                {'label': 'MCTS', 'value': 'MCTS'},
+                {'label': 'Monte Carlo Tree Search', 'value': 'MCTS'},
             ],
             placeholder="Select AI type for Player 1",
         )
@@ -34,7 +34,7 @@ app.layout = html.Div([
             options=[
                 {'label': 'Minimax', 'value': 'Minimax'},
                 {'label': 'Minimax Alpha-Beta Cut', 'value': 'AlphaBeta'},
-                {'label': 'MCTS', 'value': 'MCTS'},
+                {'label': 'Monte Carlo Tree Search', 'value': 'MCTS'},
             ],
             placeholder="Select AI type for Player 2 (if applicable)",
         )
