@@ -1,4 +1,4 @@
-from minmax import minimax, eval_no_heuristic
+from minmax import minimax, eval_no_heuristic, eval_mobility, eval_alignment, eval_mobility_alignment
 from minimax_prunning import minimax_pruning
 from utils import is_winner
 import typing as ty
@@ -61,13 +61,16 @@ def get_statistics(algorithm1: ty.Callable, algorithm2: ty.Callable, n_games: in
     return results, n_plays
 
 minimax_pruning_no_heuristic = functools.partial(minimax_pruning, heuristic=eval_no_heuristic)
+minimax_pruning_mobility = functools.partial(minimax_pruning, heuristic=eval_mobility)
+minimax_pruning_alignment = functools.partial(minimax_pruning, heuristic=eval_alignment)
+minimax_pruning_mobility_alignment = functools.partial(minimax_pruning, heuristic=eval_mobility_alignment)
 
 if __name__ == '__main__':
     #r, np = get_statistics(minimax, minimax_pruning, 50)
-    r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
+    #r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
+    r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
     from IPython import embed
     embed()
 
 
 
-#minimax_pruning_mobility = functools.partial(minimax_pruning, heuristic=eval_mobility)
