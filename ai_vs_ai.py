@@ -68,7 +68,9 @@ minimax_pruning_mobility_alignment = functools.partial(minimax_pruning, heuristi
 if __name__ == '__main__':
     #r, np = get_statistics(minimax, minimax_pruning, 50)
     #r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
-    r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
+    #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
+    #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_alignment)
+    r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility_alignment)
     from IPython import embed
     embed()
 
