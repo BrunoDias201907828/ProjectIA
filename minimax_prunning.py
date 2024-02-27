@@ -1,12 +1,12 @@
 from node import Node
-from minmax import eval, is_terminal, possible_moves, perform_action, update_played_moves
+from minmax import eval, is_terminal, possible_moves, perform_action, update_played_moves, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
 import math
 import time
 
 
-def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False):
+def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False, heuristic=eval_no_heuristic):
     if is_terminal(node, played_moves, _first):
-        return eval(node, player, played_moves, first=_first), None
+        return heuristic(node, player, played_moves, first=_first), None
     value, move = -math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
@@ -19,9 +19,9 @@ def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
     return value, move
 
 
-def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict):
+def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, heuristic=eval_no_heuristic):
     if is_terminal(node, played_moves):
-        return eval(node, player, played_moves), None
+        return heuristic(node, player, played_moves), None
     value, move = +math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
@@ -35,11 +35,14 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 
 @update_played_moves
-def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6):
+def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 9, heuristic=eval_no_heuristic):
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf, played_moves, _first=True)
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=6)
+    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=9)
+    #depth 8 - 15 seg
+    #depth 9 - 1 min
+    print(_value, _move)
