@@ -1,5 +1,6 @@
 from node import Node
 import numba
+import functools
 
 
 def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
@@ -29,10 +30,8 @@ def _possible(piece: int, pieces: tuple):
 
     return moves
 
-
 def possible(piece: int, pieces: set):
     return _possible(piece, tuple(pieces))
-
 
 def sucessors(cur_node, new_piece, piece):
     """takes a pos, new pos and a node and returns a new node with the move made"""
@@ -47,7 +46,6 @@ def sucessors(cur_node, new_piece, piece):
         new_white.add(new_piece)
         return Node(cur_node.depth - 1, cur_node.begin_depth, 'Black', 1, new_white, cur_node.black.copy())
 
-
 @numba.njit
 def _is_winner(positions: tuple) -> bool:
     xs = [p % 5 for p in positions]
@@ -58,19 +56,100 @@ def _is_winner(positions: tuple) -> bool:
         return False
     return True
 
-
 def is_winner(positions: tuple | list | set) -> bool:
     positions = sorted(positions)
     return _is_winner(tuple(positions))
 
 
-def eval(node, player, played_moves, first=False):
+def mobility_diff(node):
+    next_player = 'White' if node.current_player == 'Black' else 'Black'
+    node2 = Node(white=node.white, black=node.black, depth=node.depth, current_player=next_player)
+    return mobility(node) - mobility(node2)
+
+def alignment_diff(node):
+    next_player = 'White' if node.current_player == 'Black' else 'Black'
+    node2 = Node(white=node.white, black=node.black, depth=node.depth, current_player=next_player)
+    return alignment_potential(node) - alignment_potential(node2)
+
+def mobility_and_alignment(node):
+    next_player = 'White' if node.current_player == 'Black' else 'Black'
+    node2 = Node(white=node.white, black=node.black, depth=node.depth, current_player=next_player)
+    
+    mobility_score = mobility(node) - mobility(node2)
+    alignment_score = alignment_potential(node) - alignment_potential(node2)
+    return 0.3 * mobility_score + 0.7 * alignment_score
+
+#def eval(node, player, played_moves, first=False, fn=lambda x: 0):
+#    depth_penalty = 1 - node.depth / 10
+#    if is_winner(getattr(node, player.lower())):
+#        return 2 - depth_penalty  # Later wins are less rewarded
+#    elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
+#        return -2 + depth_penalty  # Later loses are less penalized
+#    elif is_draw(node, played_moves, first):
+#        #-1 + depth_penalty  # Later draws are less penalized
+#        return 0
+#    return fn(node)
+
+def eval(node, player, played_moves, first=False, fn=mobility_and_alignment):
+    depth_penalty = 1 - node.depth / 10
+    if is_winner(getattr(node, player.lower())):
+        return 2 - depth_penalty  # Later wins are less rewarded
+    if is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
+        return -2 + depth_penalty  # Later loses are less penalized
+    if is_draw(node, played_moves, first):
+        if fn is not None:
+            return 0  
+        return -1 + depth_penalty
+    if fn is not None:
+        return fn(node)
+    return 0
+
+
+eval_mobility = functools.partial(eval, fn=mobility_diff)
+eval_alignment  = functools.partial(eval, fn=alignment_diff)
+eval_mobility_alignment = functools.partial(eval, fn=mobility_and_alignment)
+eval_no_heuristic = functools.partial(eval, fn=None)
+
+
+def mobility(node):
+    mob = 0
+    for _, moves in possible_moves(node):
+        for _ in moves:
+            mob += 1
+    return mob / 24
+
+def alignment_potential(node):
+    alignment = 0
+    if node.current_player == 'White':
+        pieces = node.white
+    else:
+        pieces = node.black
+    for piece in pieces:
+        for move in possible(piece, pieces):
+            new_set = set(pieces)
+            new_set.remove(piece)
+            new_set.add(move)
+            if is_winner(new_set):
+                alignment += 1
+    return min(alignment / 2, 1)
+
+def cutoff_test(node, played_moves, first=False):
+    if is_terminal(node, played_moves, first):
+        return True
+    elif eval(node, node.current_player, played_moves, first) < -0.25:
+        return True
+    else:
+        return False
+
+def eval2(node, player, played_moves, first=False):
     depth_penalty = 1 - node.depth / 10
     value = 0
     if is_winner(getattr(node, player.lower())):
         value = 2 - depth_penalty  # Later wins are less rewarded
+        return 2 - depth_penalty  # Later wins are less rewarded
     elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
         value = -2 + depth_penalty  # Later loses are less penalized
+        return -2 + depth_penalty  # Later loses are less penalized
     elif is_draw(node, played_moves, first):
         value = -1 + depth_penalty  # Later draws are less penalized
     return value
@@ -78,7 +157,6 @@ def eval(node, player, played_moves, first=False):
 
 def is_terminal(node, played_moves, first=False):
     return any([is_winner(node.black), is_winner(node.white)]) or is_draw(node, played_moves, first) or node.depth == 0
-
 
 def is_draw(node, played_moves, first=False):
     key = (frozenset(node.white), frozenset(node.black))
