@@ -10,11 +10,12 @@ import argparse
 class NeutreekoAIvsAI(Neutreeko):
     algorithms_mapper = {'MinimaxPruning': minimax_pruning, 'Minimax': minimax, 'MonteCarlo': mcts}
 
-    def __init__(self, algorithm1: str, algorithm2: str):
+    def __init__(self, algorithm1: str, algorithm2: str, algorithm_index: int | None = None):
         super().__init__(name='Neutreeko - AI vs AI')
         self.algorithm_turn = None
         self.algorithm_names = {1: algorithm1, 2: algorithm2}
         self.algorithms = {i: self.algorithms_mapper[name] for i, name in self.algorithm_names.items()}
+        self.init_algorithm_index = algorithm_index
         self.algorithm_index = None
         self.algorithm = None
         self.started = None
@@ -23,7 +24,7 @@ class NeutreekoAIvsAI(Neutreeko):
 
     def setup(self):
         super().setup()
-        self.algorithm_index = np.random.choice([1, 2])
+        self.algorithm_index = np.random.choice([1, 2]) if self.init_algorithm_index is None else self.init_algorithm_index
         self.started = False
         self.display_running = False
 
@@ -63,13 +64,10 @@ class NeutreekoAIvsAI(Neutreeko):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Neutreeko AI vs AI Game Mode')
-    parser.add_argument('-a1', '--algorithm1', type=str, default='minimax_pruning',
-                        choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'],
-                        help='AI mode (minimax_pruning or minimax or monte_carlo_tree_search)')
-    parser.add_argument('-a2', '--algorithm2', type=str, default='minimax_pruning',
-                        choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'],
-                        help='AI mode (minimax_pruning or minimax or monte_carlo_tree_search)')
+    parser.add_argument('-a1', '--algorithm1', type=str, choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'])
+    parser.add_argument('-a2', '--algorithm2', type=str, choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'])
+    parser.add_argument('-i', '--init_algorithm_index', type=int, choices=[1, 2], default=None)
     args = parser.parse_args()
-    game = NeutreekoAIvsAI(args.algorithm1, args.algorithm2)
+    game = NeutreekoAIvsAI(args.algorithm1, args.algorithm2, args.init_algorithm_index)
     game.setup()
     game.run()
