@@ -1,5 +1,6 @@
 from minmax import minimax, eval_no_heuristic, eval_mobility, eval_alignment, eval_mobility_alignment
-from minimax_prunning import minimax_pruning
+#from minimax_prunning import minimax_pruning
+from last_prunning import minimax_pruning
 from utils import is_winner
 import typing as ty
 import numpy as np
@@ -70,7 +71,10 @@ if __name__ == '__main__':
     #r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_alignment)
-    r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility_alignment)
+    #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility_alignment)
+    #r, np = get_statistics_deterministic(minimax_pruning_mobility, minimax_pruning_alignment)
+    #r, np = get_statistics_deterministic(minimax_pruning_mobility, minimax_pruning_mobility_alignment)
+    r, np = get_statistics_deterministic(minimax_pruning_alignment, minimax_pruning_mobility_alignment)    
     from IPython import embed
     embed()
 

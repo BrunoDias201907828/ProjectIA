@@ -10,7 +10,7 @@ def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
     value, move = -math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
-            value2, _ = min_value(perform_action(node, position, new_position), player, alpha, beta, played_moves, heuristic)
+            value2, _ = min_value(perform_action(node, position, new_position), player, alpha, beta, played_moves, heuristic=heuristic)
             if value2 > value:
                 value, move = value2, (position, new_position)
                 alpha = max(alpha, value)
@@ -25,7 +25,7 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
     value, move = +math.inf, None
     for position, moves in possible_moves(node):
         for new_position in moves:
-            value2, _ = max_value(perform_action(node, position, new_position), player, alpha, beta, played_moves, heuristic)
+            value2, _ = max_value(perform_action(node, position, new_position), player, alpha, beta, played_moves, heuristic=heuristic)
             if value2 < value:
                 value, move = value2, (position, new_position)
                 beta = min(beta, value)
@@ -35,7 +35,7 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 
 @update_played_moves
-def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 7, heuristic=eval_no_heuristic):
+def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 7, heuristic=eval_mobility_alignment):
     if heuristic==eval_no_heuristic:
         depth = depth + 1
     node = Node(white=white, black=black, depth=depth, current_player=player)
@@ -45,7 +45,7 @@ def minimax_pruning(white: set, black: set, player: str, played_moves: dict | No
 if __name__ == '__main__':
     t0 = time.time()
 
-    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=7)
+    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=8)
 
     #-------------------no heuristic-------------------
 
@@ -54,17 +54,17 @@ if __name__ == '__main__':
 
     #-------------------mobility-------------------
 
-    #depth 7 - 19 seg
-    #depth 8 - 1 min 22 seg
+    #depth 7 - 16 seg
+    #depth 8 - 1 min 12 seg
 
     #-------------------alignment-------------------
 
-    #depth 7 - 14 seg
-    #depth 8 - 2.24 (tlv seja por o pc aquecer muito)
+    #depth 7 - 13 seg
+    #depth 8 - 2 min 24 seg
 
     #-------------------mobility_alignment-------------------
 
-    #depth 7 - 16.5 seg
-    #depth 8 - 2 min 25 seg
+    #depth 7 - 38 seg
+    #depth 8 - 4 min 54 seg
 
     print(_value, _move)
