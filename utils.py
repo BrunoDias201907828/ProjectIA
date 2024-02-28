@@ -136,7 +136,7 @@ def alignment_potential(node):
 def cutoff_test(node, played_moves, first=False):
     if is_terminal(node, played_moves, first):
         return True
-    elif eval(node, node.current_player, played_moves, first) < -0.25:
+    elif eval(node, node.current_player, played_moves, first) < -0.25 and not first:
         return True
     else:
         return False

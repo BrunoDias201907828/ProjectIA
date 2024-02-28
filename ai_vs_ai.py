@@ -1,5 +1,6 @@
 from minmax import minimax, eval_no_heuristic, eval_mobility, eval_alignment, eval_mobility_alignment
 #from minimax_prunning import minimax_pruning
+from monte_carlo import mcts
 from last_prunning import minimax_pruning
 from utils import is_winner
 import typing as ty
@@ -44,7 +45,6 @@ def get_statistics_deterministic(algorithm1: ty.Callable, algorithm2: ty.Callabl
     n_plays = []
     for i in tqdm.tqdm(range(2)):
         start_player = i + 1
-        print(start_player)
         winner, plays = game_simulation(algorithm1, algorithm2, start_player)
         results[winner] += 1
         n_plays.append(plays)
@@ -69,12 +69,16 @@ minimax_pruning_mobility_alignment = functools.partial(minimax_pruning, heuristi
 if __name__ == '__main__':
     #r, np = get_statistics(minimax, minimax_pruning, 50)
     #r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
-    #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
+    r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_alignment)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility_alignment)
     #r, np = get_statistics_deterministic(minimax_pruning_mobility, minimax_pruning_alignment)
     #r, np = get_statistics_deterministic(minimax_pruning_mobility, minimax_pruning_mobility_alignment)
-    r, np = get_statistics_deterministic(minimax_pruning_alignment, minimax_pruning_mobility_alignment)    
+    #r, np = get_statistics_deterministic(minimax_pruning_alignment, minimax_pruning_mobility_alignment)
+
+    #r, np = get_statistics(minimax_pruning_no_heuristic, mcts, 50)
+
+
     from IPython import embed
     embed()
 

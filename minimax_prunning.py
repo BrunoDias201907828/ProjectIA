@@ -45,7 +45,7 @@ def minimax_pruning(white: set, black: set, player: str, played_moves: dict | No
 if __name__ == '__main__':
     t0 = time.time()
 
-    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=8)
+    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=7)
 
     #-------------------no heuristic-------------------
 
