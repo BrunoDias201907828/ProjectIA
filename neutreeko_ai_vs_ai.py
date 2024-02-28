@@ -5,10 +5,19 @@ from minimax_prunning import minimax_pruning
 from monte_carlo import mcts
 import numpy as np
 import argparse
+import functools
+from utils import eval_alignment, eval
+eval_basic = functools.partial(eval, fn=None)
 
 
 class NeutreekoAIvsAI(Neutreeko):
-    algorithms_mapper = {'MinimaxPruning': minimax_pruning, 'Minimax': minimax, 'MonteCarlo': mcts}
+    algorithms_mapper = {
+        'MinimaxPruning': minimax_pruning, 'Minimax': minimax, 'MonteCarlo': mcts,
+        'Easy': functools.partial(minimax_pruning, depth=4, heuristic=eval_alignment),
+        'Normal': functools.partial(minimax_pruning, depth=4, heuristic=eval_basic),
+        'Difficult': functools.partial(minimax_pruning, depth=6, heuristic=eval_basic),
+        'Expert': functools.partial(minimax_pruning, depth=8, heuristic=eval_basic)
+    }
 
     def __init__(self, algorithm1: str, algorithm2: str, algorithm_index: int | None = None):
         super().__init__(name='Neutreeko - AI vs AI')

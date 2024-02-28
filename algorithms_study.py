@@ -42,6 +42,7 @@ def mixmax_vs_alphabeta():
             'minimaxMemory': [0] * length, 'minimaxPruningMemory': [0] * length}
 
     init = [generate_initial_state() for _ in range(num_reps)]
+    heuristic = functools.partial(eval, fn=None)
 
     for i, depth in enumerate(range(start_depth, max_depth+1)):
         if depth <= 7:
@@ -56,16 +57,17 @@ def mixmax_vs_alphabeta():
         # time_minimax_pruning = [time_fn(minimax_pruning, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
         time_minimax_pruning = [-1]
         tracemalloc.start()
-        mem_minimax_pruning = [track_memory(minimax_pruning, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        mem_minimax_pruning = [track_memory(minimax_pruning, white=white, black=black, player=player, depth=depth, heuristic=heuristic) for white, black, player in tqdm.tqdm(init)]
         tracemalloc.stop()
 
         data['minimaxTime'][i] = np.mean(time_minimax)
         data['minimaxPruningTime'][i] = np.mean(time_minimax_pruning)
         data['minimaxMemory'][i] = np.mean(mem_minimax)
         data['minimaxPruningMemory'][i] = np.mean(mem_minimax_pruning)
-        df = pd.DataFrame(data, index=names)
-        from IPython import embed
-        embed()
+    df = pd.DataFrame(data, index=names)
+    df.to_csv('minmax.csv')
+    from IPython import embed
+    embed()
 
 
 def heuristics():
@@ -79,7 +81,7 @@ def heuristics():
         'noCutoffTime'  : [0] * length, 'CutoffTime'  : [0] * length,
         'noCutoffMemory': [0] * length, 'CutoffMemory': [0] * length
     }
-    no_cutoff = minimax_no_cutoff
+    no_cutoff = functools.partial(minimax_no_cutoff, heuristic=eval_fn)
     cutoff = functools.partial(minimax_cutoff, heuristic=eval_fn)
 
     init = [generate_initial_state() for _ in range(num_reps)]
@@ -101,36 +103,36 @@ def heuristics():
         data['CutoffTime'][i] = np.mean(time_cutoff)
         data['CutoffMemory'][i] = np.mean(mem_cutoff)
     df = pd.DataFrame(data, index=names)
+    df.to_csv('heuristics.csv')
     from IPython import embed
     embed()
 
 
 def monte_carlo():
-    max_depth = 9
-    start_depth = 3
-    length = max_depth - start_depth + 1
     times_limits = [30, 60, 120]
     num_reps = 5
-    eval_fn = functools.partial(eval, fn=None)
     names = [f'Time{i}' for i in times_limits]
+    length = len(times_limits)
     data = {
         'n_visits'  : [0] * length, 'memory'  : [0] * length
     }
-    no_cutoff = minimax_no_cutoff
-    cutoff = functools.partial(minimax_cutoff, heuristic=eval_fn)
-
     init = [generate_initial_state() for _ in range(num_reps)]
 
     for i, time_limit in enumerate(times_limits):
-        visits = [mcts(white=white, black=black, player=player, time_limit=time_limit) for white, black, player in tqdm.tqdm(init)[0] for _ in range(num_reps)]
+        visits = [mcts(white=white, black=black, player=player, time_limit=time_limit)[0] for white, black, player in tqdm.tqdm(init)]
         tracemalloc.start()
-        mem = [track_memory(mcts(white=white, black=black, player=player, time_limit=time_limit) for white, black, player in tqdm.tqdm(init)) for _ in range(num_reps)]
+        mem = [track_memory(mcts, white=white, black=black, player=player, time_limit=time_limit) for white, black, player in tqdm.tqdm(init)]
         tracemalloc.stop()
         data['n_visits'][i] = np.mean(visits)
         data['memory'][i] = np.mean(mem)
+    df = pd.DataFrame(data, index=names)
+    df.to_csv('mcts.csv')
+    from IPython import embed; embed()
+
 
 if __name__ == '__main__':
     # mixmax_vs_alphabeta()
-    heuristics()
+    # heuristics()
+    monte_carlo()
 
 
