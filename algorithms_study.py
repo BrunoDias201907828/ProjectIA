@@ -1,10 +1,15 @@
+import functools
 from minmax import minimax
 from minimax_prunning import minimax_pruning
+from minimax_prunning import minimax_pruning as minimax_no_cutoff
 import pandas as pd
 import numpy as np
 from time import time
-from memory_profiler import memory_usage
+import tracemalloc
 import tqdm
+from utils import eval
+from last_prunning import minimax_pruning as minimax_cutoff
+from monte_carlo import mcts
 
 
 def time_fn(fn, **kwargs):
@@ -14,8 +19,10 @@ def time_fn(fn, **kwargs):
 
 
 def track_memory(fn, **kwargs):
-    mem_usage = memory_usage((fn, (), kwargs))
-    return max(mem_usage) - min(mem_usage)
+    tracemalloc.clear_traces()
+    fn(**kwargs)
+    first_size, first_peak = tracemalloc.get_traced_memory()
+    return first_peak
 
 
 def generate_initial_state():
@@ -25,9 +32,9 @@ def generate_initial_state():
     return white, black, player
 
 
-if __name__ == '__main__':
+def mixmax_vs_alphabeta():
     max_depth = 9
-    start_depth = 1
+    start_depth = 3
     length = max_depth - start_depth + 1
     num_reps = 5
     names = [f'Depth{i}' for i in range(start_depth, max_depth + 1)]
@@ -36,23 +43,94 @@ if __name__ == '__main__':
 
     init = [generate_initial_state() for _ in range(num_reps)]
 
-    for depth in range(start_depth, max_depth+1):
+    for i, depth in enumerate(range(start_depth, max_depth+1)):
         if depth <= 7:
-            time_minimax = [time_fn(minimax, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+            # time_minimax = [time_fn(minimax, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+            time_minimax = [-1]
+            tracemalloc.start()
             mem_minimax = [track_memory(minimax, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+            tracemalloc.stop()
         else:
             time_minimax = [-1]
             mem_minimax = [-1]
-        time_minimax_pruning = [time_fn(minimax_pruning, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        # time_minimax_pruning = [time_fn(minimax_pruning, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        time_minimax_pruning = [-1]
+        tracemalloc.start()
         mem_minimax_pruning = [track_memory(minimax_pruning, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        tracemalloc.stop()
 
-        data['minimaxTime'][depth-1] = np.mean(time_minimax)
-        data['minimaxPruningTime'][depth-1] = np.mean(time_minimax_pruning)
-        data['minimaxMemory'][depth-1] = np.mean(mem_minimax)
-        data['minimaxPruningMemory'][depth-1] = np.mean(mem_minimax_pruning)
+        data['minimaxTime'][i] = np.mean(time_minimax)
+        data['minimaxPruningTime'][i] = np.mean(time_minimax_pruning)
+        data['minimaxMemory'][i] = np.mean(mem_minimax)
+        data['minimaxPruningMemory'][i] = np.mean(mem_minimax_pruning)
+        df = pd.DataFrame(data, index=names)
+        from IPython import embed
+        embed()
 
+
+def heuristics():
+    max_depth = 9
+    start_depth = 3
+    length = max_depth - start_depth + 1
+    num_reps = 5
+    eval_fn = functools.partial(eval, fn=None)
+    names = [f'Depth{i}' for i in range(start_depth, max_depth + 1)]
+    data = {
+        'noCutoffTime'  : [0] * length, 'CutoffTime'  : [0] * length,
+        'noCutoffMemory': [0] * length, 'CutoffMemory': [0] * length
+    }
+    no_cutoff = minimax_no_cutoff
+    cutoff = functools.partial(minimax_cutoff, heuristic=eval_fn)
+
+    init = [generate_initial_state() for _ in range(num_reps)]
+
+    for i, depth in enumerate(range(start_depth, max_depth+1)):
+        print(i)
+        time_no_cutoff = [time_fn(no_cutoff, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        tracemalloc.start()
+        mem_no_cutoff = [track_memory(no_cutoff, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        tracemalloc.stop()
+
+        time_cutoff = [time_fn(cutoff, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        tracemalloc.start()
+        mem_cutoff = [track_memory(cutoff, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
+        tracemalloc.stop()
+
+        data['noCutoffTime'][i] = np.mean(time_no_cutoff)
+        data['noCutoffMemory'][i] = np.mean(mem_no_cutoff)
+        data['CutoffTime'][i] = np.mean(time_cutoff)
+        data['CutoffMemory'][i] = np.mean(mem_cutoff)
     df = pd.DataFrame(data, index=names)
     from IPython import embed
     embed()
+
+
+def monte_carlo():
+    max_depth = 9
+    start_depth = 3
+    length = max_depth - start_depth + 1
+    times_limits = [30, 60, 120]
+    num_reps = 5
+    eval_fn = functools.partial(eval, fn=None)
+    names = [f'Time{i}' for i in times_limits]
+    data = {
+        'n_visits'  : [0] * length, 'memory'  : [0] * length
+    }
+    no_cutoff = minimax_no_cutoff
+    cutoff = functools.partial(minimax_cutoff, heuristic=eval_fn)
+
+    init = [generate_initial_state() for _ in range(num_reps)]
+
+    for i, time_limit in enumerate(times_limits):
+        visits = [mcts(white=white, black=black, player=player, time_limit=time_limit) for white, black, player in tqdm.tqdm(init)[0] for _ in range(num_reps)]
+        tracemalloc.start()
+        mem = [track_memory(mcts(white=white, black=black, player=player, time_limit=time_limit) for white, black, player in tqdm.tqdm(init)) for _ in range(num_reps)]
+        tracemalloc.stop()
+        data['n_visits'][i] = np.mean(visits)
+        data['memory'][i] = np.mean(mem)
+
+if __name__ == '__main__':
+    # mixmax_vs_alphabeta()
+    heuristics()
 
 

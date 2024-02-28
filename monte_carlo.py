@@ -108,10 +108,9 @@ def best_child(node):
 def mcts(white: set, black: set, player: str, played_moves: dict | None = None, time_limit: int = 30):
     init_node = Node(current_player=player, white=white, black=black)
     node = monte_carlo_tree_search(init_node, played_moves, time_limit=time_limit, player=player)
-    print(node.visits)
     position = (getattr(init_node, player.lower()) - getattr(node, player.lower())).pop()
     new_position = (getattr(node, player.lower()) - getattr(init_node, player.lower())).pop()
-    return node.utility, (position, new_position)
+    return node.parent.visits, (position, new_position)
 
 
 if __name__ == '__main__':
