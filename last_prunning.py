@@ -4,7 +4,7 @@ import math
 import time
 
 
-def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False, heuristic=eval_alignment):
+def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False, heuristic=eval_no_heuristic):
     if cutoff_test(node, played_moves, _first):
         return heuristic(node, player, played_moves, first=_first), None
     value, move = -math.inf, None
@@ -19,7 +19,7 @@ def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
     return value, move
 
 
-def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, heuristic=eval_alignment):
+def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, heuristic=eval_no_heuristic):
     if cutoff_test(node, played_moves):
         return heuristic(node, player, played_moves), None
     value, move = +math.inf, None
@@ -35,23 +35,15 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 
 @update_played_moves
-def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6, heuristic=eval_mobility):
-    depth = 0
-    if heuristic==eval_no_heuristic:
-        depth = 11
-    if heuristic==eval_mobility:
-        depth = 8
-    if heuristic==eval_alignment:
-        depth = 9
-    if heuristic==eval_mobility_alignment:
-        depth = 8
+def last_prunning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6, heuristic=eval_no_heuristic):
+
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf, played_moves, _first=True, heuristic=heuristic)
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=9)
+    _value, _move, _played_moves = last_prunning({1, 3, 17}, {7, 21, 23}, 'Black', depth=8)
 
         #-------------------no heuristic-------------------
 

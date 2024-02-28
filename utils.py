@@ -79,17 +79,6 @@ def mobility_and_alignment(node):
     alignment_score = alignment_potential(node) - alignment_potential(node2)
     return 0.3 * mobility_score + 0.7 * alignment_score
 
-#def eval(node, player, played_moves, first=False, fn=lambda x: 0):
-#    depth_penalty = 1 - node.depth / 10
-#    if is_winner(getattr(node, player.lower())):
-#        return 2 - depth_penalty  # Later wins are less rewarded
-#    elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
-#        return -2 + depth_penalty  # Later loses are less penalized
-#    elif is_draw(node, played_moves, first):
-#        #-1 + depth_penalty  # Later draws are less penalized
-#        return 0
-#    return fn(node)
-
 def eval(node, player, played_moves, first=False, fn=mobility_and_alignment):
     depth_penalty = 1 - node.depth / 10
     if is_winner(getattr(node, player.lower())):
@@ -136,23 +125,10 @@ def alignment_potential(node):
 def cutoff_test(node, played_moves, first=False):
     if is_terminal(node, played_moves, first):
         return True
-    elif eval(node, node.current_player, played_moves, first) < -0.25 and not first:
+    elif eval(node, node.current_player, played_moves, first) < -0.5 and not first:
         return True
     else:
         return False
-
-def eval2(node, player, played_moves, first=False):
-    depth_penalty = 1 - node.depth / 10
-    value = 0
-    if is_winner(getattr(node, player.lower())):
-        value = 2 - depth_penalty  # Later wins are less rewarded
-        return 2 - depth_penalty  # Later wins are less rewarded
-    elif is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
-        value = -2 + depth_penalty  # Later loses are less penalized
-        return -2 + depth_penalty  # Later loses are less penalized
-    elif is_draw(node, played_moves, first):
-        value = -1 + depth_penalty  # Later draws are less penalized
-    return value
 
 
 def is_terminal(node, played_moves, first=False):
