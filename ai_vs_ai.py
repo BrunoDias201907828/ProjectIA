@@ -1,7 +1,7 @@
 from minmax import minimax, eval_no_heuristic, eval_mobility, eval_alignment, eval_mobility_alignment
-from minimax_prunning import minimax_pruning
+from alpha_beta import minimax_pruning
 from monte_carlo import mcts
-from last_prunning import last_prunning
+from alpha_beta_cutoff import last_prunning
 from utils import is_winner
 import typing as ty
 import numpy as np

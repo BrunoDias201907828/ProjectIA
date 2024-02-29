@@ -1,7 +1,7 @@
 import arcade
 from neutreeko import Neutreeko
 from minmax import minimax
-from minimax_prunning import minimax_pruning
+from alpha_beta import minimax_pruning
 from monte_carlo import mcts
 import numpy as np
 import argparse
