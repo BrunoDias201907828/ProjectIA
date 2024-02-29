@@ -23,7 +23,7 @@ app.layout = html.Div([
             options=[
                 {'label': 'Easy', 'value': 'Easy'},
                 {'label': 'Normal', 'value': 'Normal'},
-                {'label': 'Hard', 'value': 'Hard'},
+                {'label': 'Difficult', 'value': 'Difficult'},
                 {'label': 'Expert', 'value': 'Expert'},
             ],
             placeholder="Select AI type for Player 1",
@@ -46,7 +46,7 @@ app.layout = html.Div([
             options=[
                 {'label': 'Easy', 'value': 'Easy'},
                 {'label': 'Normal', 'value': 'Normal'},
-                {'label': 'Hard', 'value': 'Hard'},
+                {'label': 'Difficult', 'value': 'Difficult'},
                 {'label': 'Expert', 'value': 'Expert'},
             ],
             placeholder="Select AI type for Player 2 (if applicable)",
