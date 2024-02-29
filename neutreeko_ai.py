@@ -5,6 +5,9 @@ from monte_carlo import mcts
 import arcade
 import random
 import argparse
+import functools
+from utils import eval_alignment, eval
+eval_basic = functools.partial(eval, fn=None)
 
 
 class NeutreekoAI(Neutreeko):
@@ -13,7 +16,13 @@ class NeutreekoAI(Neutreeko):
         self.start_ai = start_ai
         self.ai_turn = None
         self.mode = mode
-        self.ai_fn = {'MinimaxPruning': minimax_pruning, 'Minimax': minimax, 'MonteCarlo': mcts}[mode]
+        self.ai_fn = {
+            'MinimaxPruning': minimax_pruning, 'Minimax': minimax, 'MonteCarlo': mcts,
+            'Easy': functools.partial(minimax_pruning, depth=4, heuristic=eval_alignment),
+            'Normal': functools.partial(minimax_pruning, depth=4, heuristic=eval_basic),
+            'Difficult': functools.partial(minimax_pruning, depth=6, heuristic=eval_basic),
+            'Expert': functools.partial(minimax_pruning, depth=8, heuristic=eval_basic)
+        }[mode]
         self.ai_running = None
 
     def setup(self):

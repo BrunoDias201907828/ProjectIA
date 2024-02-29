@@ -36,8 +36,6 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 @update_played_moves
 def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 7, heuristic=eval_mobility_alignment):
-    if heuristic==eval_no_heuristic:
-        depth = depth + 1
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf, played_moves, _first=True, heuristic=heuristic)
 
