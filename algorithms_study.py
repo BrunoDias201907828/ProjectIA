@@ -1,14 +1,14 @@
 import functools
 from minmax import minimax
-from minimax_prunning import minimax_pruning
-from minimax_prunning import minimax_pruning as minimax_no_cutoff
+from alpha_beta import minimax_pruning
+from alpha_beta import minimax_pruning as minimax_no_cutoff
 import pandas as pd
 import numpy as np
 from time import time
 import tracemalloc
 import tqdm
 from utils import eval
-from last_prunning import minimax_pruning as minimax_cutoff
+from alpha_beta_cutoff import minimax_pruning as minimax_cutoff
 from monte_carlo import mcts
 
 
@@ -127,7 +127,6 @@ def monte_carlo():
         data['memory'][i] = np.mean(mem)
     df = pd.DataFrame(data, index=names)
     df.to_csv('mcts.csv')
-    from IPython import embed; embed()
 
 
 if __name__ == '__main__':
