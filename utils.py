@@ -8,7 +8,6 @@ def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
     current_player = cur_node.current_player.lower()
     return [(piece, possible(piece, cur_node.black | cur_node.white)) for piece in getattr(cur_node, current_player)]
 
-
 @numba.njit
 def _possible(piece: int, pieces: tuple):
     moves = []
@@ -33,19 +32,6 @@ def _possible(piece: int, pieces: tuple):
 def possible(piece: int, pieces: set):
     return _possible(piece, tuple(pieces))
 
-def sucessors(cur_node, new_piece, piece):
-    """takes a pos, new pos and a node and returns a new node with the move made"""
-    if cur_node.current_player == 'Black':
-        new_black = cur_node.black.copy()
-        new_black.remove(piece)
-        new_black.add(new_piece)
-        return Node(cur_node.depth - 1, cur_node.begin_depth, 'White', 1, cur_node.white.copy(), new_black)
-    else:
-        new_white = cur_node.white.copy()
-        new_white.remove(piece)
-        new_white.add(new_piece)
-        return Node(cur_node.depth - 1, cur_node.begin_depth, 'Black', 1, new_white, cur_node.black.copy())
-
 @numba.njit
 def _is_winner(positions: tuple) -> bool:
     xs = [p % 5 for p in positions]
@@ -59,7 +45,6 @@ def _is_winner(positions: tuple) -> bool:
 def is_winner(positions: tuple | list | set) -> bool:
     positions = sorted(positions)
     return _is_winner(tuple(positions))
-
 
 def mobility_diff(node):
     next_player = 'White' if node.current_player == 'Black' else 'Black'
