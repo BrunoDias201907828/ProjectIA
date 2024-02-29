@@ -54,7 +54,7 @@ class Neutreeko(arcade.Window):
         self.end_game_message = None
         self.end_game_message_size = 96
 
-        arcade.set_background_color(arcade.color.BABY_BLUE)
+        arcade.set_background_color(arcade.color.BLUE_BELL)
 
     def is_draw(self) -> bool:
         key = (frozenset(self.get_white_positions()), frozenset(self.get_black_positions()))

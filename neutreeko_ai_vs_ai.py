@@ -73,8 +73,8 @@ class NeutreekoAIvsAI(Neutreeko):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Neutreeko AI vs AI Game Mode')
-    parser.add_argument('-a1', '--algorithm1', type=str, choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'])
-    parser.add_argument('-a2', '--algorithm2', type=str, choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'])
+    parser.add_argument('-a1', '--algorithm1', type=str)
+    parser.add_argument('-a2', '--algorithm2', type=str)
     parser.add_argument('-i', '--init_algorithm_index', type=int, choices=[1, 2], default=None)
     args = parser.parse_args()
     game = NeutreekoAIvsAI(args.algorithm1, args.algorithm2, args.init_algorithm_index)

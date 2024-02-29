@@ -65,7 +65,7 @@ class NeutreekoAI(Neutreeko):
 
 def main():
     parser = argparse.ArgumentParser(description='Neutreeko AI Game Mode')
-    parser.add_argument('-m', '--mode'    , type=str , default='minimax_pruning', choices=['MinimaxPruning', 'Minimax', 'MonteCarlo'])
+    parser.add_argument('-m', '--mode'    , type=str , default='minimax_pruning')
     parser.add_argument('-s', '--start_ai', type=int, default=None)
     args = parser.parse_args()
     window = NeutreekoAI(mode=args.mode, start_ai=bool(args.start_ai) if args.start_ai is not None else None)
