@@ -94,13 +94,13 @@ def update_ai_selection(game_mode):
 def launch_game(n_clicks, game_mode, ai_type_1, ai_type_2, ai_start_2, ai_start_1):
     if n_clicks > 0:
         if game_mode == 'HvH':
-            v = os.system('python neutreeko.py')
+            v = os.system('python -m app.neutreeko')
             if v != 0:
-                os.system('python3 neutreeko.py')
+                os.system('python3 -m app.neutreeko')
         elif game_mode == 'HvAI':
             ai_agent = ai_type_1
             if ai_agent is not None:
-                cmd = f'python3 neutreeko_ai.py -m {ai_agent}'
+                cmd = f'python3 -m app.neutreeko_ai -m {ai_agent}'
                 if ai_start_1 != -1:
                     cmd += f' -s {ai_start_1}'
                 print(cmd)
@@ -108,12 +108,10 @@ def launch_game(n_clicks, game_mode, ai_type_1, ai_type_2, ai_start_2, ai_start_
                 if v != 0:
                     cmd = cmd.replace('python3', 'python')
                     os.system(cmd)
-            else:
-                raise NotImplementedError
         else:
             ai_agent1, ai_agent2 = ai_type_1, ai_type_2
             if ai_agent1 is not None and ai_agent2 is not None:
-                cmd = f'python3 neutreeko_ai_vs_ai.py -a1 {ai_agent1} -a2 {ai_agent2}'
+                cmd = f'python3 -m app.neutreeko_ai_vs_ai -a1 {ai_agent1} -a2 {ai_agent2}'
                 if ai_start_2 != 0:
                     cmd += f' -i {ai_start_2}'
                 v = os.system(cmd)

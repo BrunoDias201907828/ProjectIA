@@ -1,6 +1,5 @@
-from utils import Node
-from minmax import is_terminal, possible_moves, perform_action, update_played_moves
-from heuristics import eval, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
+from .utils import Node, is_terminal, possible_moves, perform_action, update_played_moves
+from .heuristics import eval_no_heuristic
 import math
 import time
 
@@ -44,7 +43,7 @@ def minimax_pruning(white: set, black: set, player: str, played_moves: dict | No
 if __name__ == '__main__':
     t0 = time.time()
 
-    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=7)
+    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=4)
 
     #-------------------no heuristic-------------------
 

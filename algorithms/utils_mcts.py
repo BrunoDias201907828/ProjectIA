@@ -1,4 +1,4 @@
-from utils import is_draw, is_winner, get_repetitions, possible_moves
+from .utils import is_draw, is_winner, get_repetitions, possible_moves
 import math
 
 

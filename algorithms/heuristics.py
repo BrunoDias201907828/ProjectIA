@@ -1,6 +1,5 @@
 import functools
-
-from utils import possible_moves, possible, is_winner, Node, is_draw, is_terminal
+from .utils import possible_moves, possible, is_winner, Node, is_draw, is_terminal
 
 
 def mobility(node):

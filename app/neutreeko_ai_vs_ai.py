@@ -1,12 +1,12 @@
 import arcade
-from neutreeko import Neutreeko
-from minmax import minimax
-from alpha_beta import minimax_pruning
-from monte_carlo import mcts
+from .neutreeko import Neutreeko
+from algorithms.minmax import minimax
+from algorithms.alpha_beta import minimax_pruning
+from algorithms.monte_carlo import mcts
 import numpy as np
 import argparse
 import functools
-from heuristics import eval, eval_alignment
+from algorithms.heuristics import eval, eval_alignment
 
 eval_basic = functools.partial(eval, fn=None)
 

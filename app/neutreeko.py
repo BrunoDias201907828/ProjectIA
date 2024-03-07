@@ -1,7 +1,6 @@
-from utils import *
+from algorithms.utils import *
 import arcade
 from pathlib import Path
-import random
 
 # Screen title and size
 SCREEN_WIDTH = 1280

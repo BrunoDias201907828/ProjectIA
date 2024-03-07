@@ -1,9 +1,8 @@
-from minmax import minimax
-from heuristics import eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
-from alpha_beta import minimax_pruning
-from monte_carlo import mcts
-from alpha_beta_cutoff import alpha_beta_cutoff
-from utils import is_winner
+from algorithms.minmax import minimax
+from algorithms.heuristics import eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
+from algorithms.alpha_beta import minimax_pruning
+from algorithms.alpha_beta_cutoff import alpha_beta_cutoff
+from algorithms.utils import is_winner
 import typing as ty
 import numpy as np
 import tqdm

@@ -1,6 +1,5 @@
-from utils import Node
-from minmax import possible_moves, perform_action, update_played_moves
-from heuristics import eval, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic, cutoff_test
+from .utils import Node, possible_moves, perform_action, update_played_moves
+from .heuristics import eval_no_heuristic, cutoff_test
 import math
 import time
 
@@ -43,7 +42,7 @@ def alpha_beta_cutoff(white: set, black: set, player: str, played_moves: dict | 
 
 if __name__ == '__main__':
     t0 = time.time()
-    _value, _move, _played_moves = alpha_beta_cutoff({1, 3, 17}, {7, 21, 23}, 'Black', depth=8)
+    _value, _move, _played_moves = alpha_beta_cutoff({1, 3, 17}, {7, 21, 23}, 'Black', depth=4)
 
         #-------------------no heuristic-------------------
 

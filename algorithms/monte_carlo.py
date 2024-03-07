@@ -1,7 +1,7 @@
 import random
 import time
-from utils import update_played_moves
-from utils_mcts import *
+from .utils import update_played_moves
+from .utils_mcts import *
 
 
 def resources_left(start_time, time_limit):
@@ -114,20 +114,8 @@ def mcts(white: set, black: set, player: str, played_moves: dict | None = None, 
 
 
 if __name__ == '__main__':
-    # node = monte_carlo_tree_search(Node(depth=6, current_player='Black', white={1,3,17}, black={7,21,23}), {}, time_limit=30)
-    from cProfile import Profile
-    from pstats import SortKey, Stats
-
     for _ in range(10):
         utils, move, played = mcts(player='Black', white={1, 3, 17}, black={7, 21, 23}, time_limit=30)
         print(move)
-    # with Profile() as profile:
-    #     utils, move, played = mcts(player='Black', white={1,3,17}, black={7,21,23}, time_limit=60)
-    #     (
-    #         Stats(profile)
-    #         .strip_dirs()
-    #         .sort_stats(SortKey.CUMULATIVE)
-    #         .print_stats()
-    #     )
 
 

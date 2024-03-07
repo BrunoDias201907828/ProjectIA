@@ -1,15 +1,15 @@
 import functools
-from minmax import minimax
-from alpha_beta import minimax_pruning
-from alpha_beta import minimax_pruning as minimax_no_cutoff
+from algorithms.minmax import minimax
+from algorithms.alpha_beta import minimax_pruning
+from algorithms.alpha_beta import minimax_pruning as minimax_no_cutoff
 import pandas as pd
 import numpy as np
 from time import time
 import tracemalloc
 import tqdm
-from heuristics import eval_no_heuristic
-from alpha_beta_cutoff import alpha_beta_cutoff
-from monte_carlo import mcts
+from algorithms.heuristics import eval_no_heuristic
+from algorithms.alpha_beta_cutoff import alpha_beta_cutoff
+from algorithms.monte_carlo import mcts
 
 
 def time_fn(fn, **kwargs):
