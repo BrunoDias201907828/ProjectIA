@@ -2,7 +2,7 @@
 
 ## How to Run the App
 
-This project an application to play the Neutreeko game.
+This project builds an application to play the Neutreeko game.
 
 It supports 3 Modes: Human vs Human, Human vs AI and AI vs AI.
 
@@ -14,7 +14,7 @@ Additionally, there is an option to decide who starts the game and a way to rest
 ### Launch Application
 To launch the application, you need to have Python installed. You will also need 3rd party libraries, although we do 
 not have a requirement file at the moment. Then, you can run the following command in the terminal, from the ProjectAI 
-file:
+folder:
 
 ```python options_menu.py```.
 
@@ -52,21 +52,11 @@ application window. If you click multiple times, it stacks and the plays can hap
 
 The options_menu.py is the main script to run the application. It uses the dash library to create the dashboard.
 
-The code for the applications is in the files neutreeko, neutreeko_ai and neutreeko_ai_vs_ai. It uses the arcade library
-to create the game. 
-
-The code for the minimax is at minmax.py. 
-
-The code for the alpha-beta cuts is at alpha_beta.py. 
-
-The code for the monte carlo tree search is at monte_carlo.py.
-
-The code for the alpha-beta cuts with cutoffs is at alpha_beta_cutoff.py.
-
-Then, the code for heuristics and util functions used in the main scripts mentioned above are in the files node.py, 
-utils.py and utils_mcts.py.
-
-The scripts to generate results are in the file algorithms_study.py and ai_vs_ai.py.
+Additionally, there are 3 different packages:
+- algorithms: here you can find the code regarding ai here. Both the algorithms and the heuristics codes are here.
+- compare_algorithms_and_heuristics: here you can find the code to compare the algorithms and heuristics. It is used to
+  generate results for the report.
+- app: here you can find the code to create the game window. The game is created using the arcade library.
 
 
 
