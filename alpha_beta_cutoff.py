@@ -1,10 +1,10 @@
-from node import Node
+from utils import Node
 from minmax import eval, possible_moves, perform_action, update_played_moves, cutoff_test, eval_alignment, eval_mobility, eval_mobility_alignment, eval_no_heuristic
 import math
 import time
 
 
-def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False, heuristic=eval_no_heuristic):
+def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, _first=False, *, heuristic):
     if cutoff_test(node, played_moves, _first):
         return heuristic(node, player, played_moves, first=_first), None
     value, move = -math.inf, None
@@ -19,7 +19,7 @@ def max_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
     return value, move
 
 
-def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, heuristic=eval_no_heuristic):
+def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: dict, *, heuristic):
     if cutoff_test(node, played_moves):
         return heuristic(node, player, played_moves), None
     value, move = +math.inf, None
@@ -36,7 +36,6 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 @update_played_moves
 def last_prunning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6, heuristic=eval_no_heuristic):
-
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf, played_moves, _first=True, heuristic=heuristic)
 

@@ -1,5 +1,5 @@
-from node import Node
-from utils import is_terminal, eval, possible_moves, perform_action, update_played_moves, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic, cutoff_test
+from utils import is_terminal, eval, possible_moves, perform_action, update_played_moves, eval_mobility, eval_alignment, \
+    eval_mobility_alignment, eval_no_heuristic, cutoff_test, Node
 
 import math
 

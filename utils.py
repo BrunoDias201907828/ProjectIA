@@ -1,12 +1,23 @@
-from node import Node
 import numba
 import functools
+from heuristics import mobility_diff, alignment_diff, mobility_and_alignment
+
+
+class Node:
+    def __init__(self, depth, current_player = 'Black', repetition = 1, white = {1,3,17}, black = {7,21,23}, parent=None):
+        self.white = white
+        self.black = black
+        self.repetition = repetition
+        self.depth = depth
+        self.current_player = current_player
+        self.parent = parent
 
 
 def possible_moves(cur_node: Node) -> list[tuple[int, list[int]]]:
     """Return a list of possible moves for the current player."""
     current_player = cur_node.current_player.lower()
     return [(piece, possible(piece, cur_node.black | cur_node.white)) for piece in getattr(cur_node, current_player)]
+
 
 @numba.njit
 def _possible(piece: int, pieces: tuple):
@@ -29,8 +40,10 @@ def _possible(piece: int, pieces: tuple):
 
     return moves
 
+
 def possible(piece: int, pieces: set):
     return _possible(piece, tuple(pieces))
+
 
 @numba.njit
 def _is_winner(positions: tuple) -> bool:
@@ -42,27 +55,11 @@ def _is_winner(positions: tuple) -> bool:
         return False
     return True
 
+
 def is_winner(positions: tuple | list | set) -> bool:
     positions = sorted(positions)
     return _is_winner(tuple(positions))
 
-def mobility_diff(node):
-    next_player = 'White' if node.current_player == 'Black' else 'Black'
-    node2 = Node(white=node.white, black=node.black, depth=node.depth, current_player=next_player)
-    return mobility(node) - mobility(node2)
-
-def alignment_diff(node):
-    next_player = 'White' if node.current_player == 'Black' else 'Black'
-    node2 = Node(white=node.white, black=node.black, depth=node.depth, current_player=next_player)
-    return alignment_potential(node) - alignment_potential(node2)
-
-def mobility_and_alignment(node):
-    next_player = 'White' if node.current_player == 'Black' else 'Black'
-    node2 = Node(white=node.white, black=node.black, depth=node.depth, current_player=next_player)
-    
-    mobility_score = mobility(node) - mobility(node2)
-    alignment_score = alignment_potential(node) - alignment_potential(node2)
-    return 0.3 * mobility_score + 0.7 * alignment_score
 
 def eval(node, player, played_moves, first=False, fn=mobility_and_alignment):
     depth_penalty = 1 - node.depth / 10
@@ -80,37 +77,15 @@ def eval(node, player, played_moves, first=False, fn=mobility_and_alignment):
 
 
 eval_mobility = functools.partial(eval, fn=mobility_diff)
-eval_alignment  = functools.partial(eval, fn=alignment_diff)
+eval_alignment = functools.partial(eval, fn=alignment_diff)
 eval_mobility_alignment = functools.partial(eval, fn=mobility_and_alignment)
 eval_no_heuristic = functools.partial(eval, fn=None)
 
 
-def mobility(node):
-    mob = 0
-    for _, moves in possible_moves(node):
-        for _ in moves:
-            mob += 1
-    return mob / 24
-
-def alignment_potential(node):
-    alignment = 0
-    if node.current_player == 'White':
-        pieces = node.white
-    else:
-        pieces = node.black
-    for piece in pieces:
-        for move in possible(piece, pieces):
-            new_set = set(pieces)
-            new_set.remove(piece)
-            new_set.add(move)
-            if is_winner(new_set):
-                alignment += 1
-    return min(alignment / 2, 1)
-
 def cutoff_test(node, played_moves, first=False):
     if is_terminal(node, played_moves, first):
         return True
-    elif eval(node, node.current_player, played_moves, first) < -0.5 and not first:
+    elif eval_mobility_alignment(node, node.current_player, played_moves, first) < -0.5 and not first:
         return True
     else:
         return False
@@ -118,6 +93,7 @@ def cutoff_test(node, played_moves, first=False):
 
 def is_terminal(node, played_moves, first=False):
     return any([is_winner(node.black), is_winner(node.white)]) or is_draw(node, played_moves, first) or node.depth == 0
+
 
 def is_draw(node, played_moves, first=False):
     key = (frozenset(node.white), frozenset(node.black))
