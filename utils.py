@@ -1,6 +1,4 @@
 import numba
-import functools
-from heuristics import mobility_diff, alignment_diff, mobility_and_alignment
 
 
 class Node:
@@ -59,36 +57,6 @@ def _is_winner(positions: tuple) -> bool:
 def is_winner(positions: tuple | list | set) -> bool:
     positions = sorted(positions)
     return _is_winner(tuple(positions))
-
-
-def eval(node, player, played_moves, first=False, fn=mobility_and_alignment):
-    depth_penalty = 1 - node.depth / 10
-    if is_winner(getattr(node, player.lower())):
-        return 2 - depth_penalty  # Later wins are less rewarded
-    if is_winner(getattr(node, 'black' if player.capitalize() == 'White' else 'white')):
-        return -2 + depth_penalty  # Later loses are less penalized
-    if is_draw(node, played_moves, first):
-        if fn is not None:
-            return 0  
-        return -1 + depth_penalty
-    if fn is not None:
-        return fn(node)
-    return 0
-
-
-eval_mobility = functools.partial(eval, fn=mobility_diff)
-eval_alignment = functools.partial(eval, fn=alignment_diff)
-eval_mobility_alignment = functools.partial(eval, fn=mobility_and_alignment)
-eval_no_heuristic = functools.partial(eval, fn=None)
-
-
-def cutoff_test(node, played_moves, first=False):
-    if is_terminal(node, played_moves, first):
-        return True
-    elif eval_mobility_alignment(node, node.current_player, played_moves, first) < -0.5 and not first:
-        return True
-    else:
-        return False
 
 
 def is_terminal(node, played_moves, first=False):

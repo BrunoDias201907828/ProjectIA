@@ -1,5 +1,6 @@
 from utils import Node
-from minmax import eval, possible_moves, perform_action, update_played_moves, cutoff_test, eval_alignment, eval_mobility, eval_mobility_alignment, eval_no_heuristic
+from minmax import possible_moves, perform_action, update_played_moves
+from heuristics import eval, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic, cutoff_test
 import math
 import time
 
@@ -35,14 +36,14 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 
 @update_played_moves
-def last_prunning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6, heuristic=eval_no_heuristic):
+def alpha_beta_cutoff(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 6, heuristic=eval_no_heuristic):
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf, played_moves, _first=True, heuristic=heuristic)
 
 
 if __name__ == '__main__':
     t0 = time.time()
-    _value, _move, _played_moves = last_prunning({1, 3, 17}, {7, 21, 23}, 'Black', depth=8)
+    _value, _move, _played_moves = alpha_beta_cutoff({1, 3, 17}, {7, 21, 23}, 'Black', depth=8)
 
         #-------------------no heuristic-------------------
 

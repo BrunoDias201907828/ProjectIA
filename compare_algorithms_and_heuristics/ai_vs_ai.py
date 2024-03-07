@@ -1,7 +1,8 @@
-from minmax import minimax, eval_no_heuristic, eval_mobility, eval_alignment, eval_mobility_alignment
+from minmax import minimax
+from heuristics import eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
 from alpha_beta import minimax_pruning
 from monte_carlo import mcts
-from alpha_beta_cutoff import last_prunning
+from alpha_beta_cutoff import alpha_beta_cutoff
 from utils import is_winner
 import typing as ty
 import numpy as np
@@ -50,6 +51,7 @@ def get_statistics_deterministic(algorithm1: ty.Callable, algorithm2: ty.Callabl
         n_plays.append(plays)
     return results, n_plays
 
+
 def get_statistics(algorithm1: ty.Callable, algorithm2: ty.Callable, n_games: int):
     results = {0: 0, 1: 0, 2: 0}
     n_plays = []
@@ -61,14 +63,15 @@ def get_statistics(algorithm1: ty.Callable, algorithm2: ty.Callable, n_games: in
         print(results, n_plays)
     return results, n_plays
 
+
 minimax_pruning_no_heuristic = functools.partial(minimax_pruning, heuristic=eval_no_heuristic)
 minimax_pruning_mobility = functools.partial(minimax_pruning, heuristic=eval_mobility)
 minimax_pruning_alignment = functools.partial(minimax_pruning, heuristic=eval_alignment)
 minimax_pruning_mobility_alignment = functools.partial(minimax_pruning, heuristic=eval_mobility_alignment)
-last_prunning_no_heuristic = functools.partial(last_prunning, heuristic=eval_no_heuristic)
+last_prunning_no_heuristic = functools.partial(alpha_beta_cutoff, heuristic=eval_no_heuristic)
 
 if __name__ == '__main__':
-    #r, np = get_statistics(minimax, minimax_pruning, 50)
+    r, np = get_statistics(minimax, minimax_pruning, 50)
     #r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_alignment)
@@ -79,10 +82,6 @@ if __name__ == '__main__':
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, last_prunning_no_heuristic)
 
     #r, np = get_statistics(minimax_pruning_no_heuristic, mcts, 50)
-
-
-    from IPython import embed
-    embed()
 
 
 

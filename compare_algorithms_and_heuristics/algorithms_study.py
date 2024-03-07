@@ -7,8 +7,8 @@ import numpy as np
 from time import time
 import tracemalloc
 import tqdm
-from utils import eval
-from alpha_beta_cutoff import minimax_pruning as minimax_cutoff
+from heuristics import eval_no_heuristic
+from alpha_beta_cutoff import alpha_beta_cutoff
 from monte_carlo import mcts
 
 
@@ -42,7 +42,6 @@ def mixmax_vs_alphabeta():
             'minimaxMemory': [0] * length, 'minimaxPruningMemory': [0] * length}
 
     init = [generate_initial_state() for _ in range(num_reps)]
-    heuristic = functools.partial(eval, fn=None)
 
     for i, depth in enumerate(range(start_depth, max_depth+1)):
         if depth <= 7:
@@ -57,7 +56,7 @@ def mixmax_vs_alphabeta():
         # time_minimax_pruning = [time_fn(minimax_pruning, white=white, black=black, player=player, depth=depth) for white, black, player in tqdm.tqdm(init)]
         time_minimax_pruning = [-1]
         tracemalloc.start()
-        mem_minimax_pruning = [track_memory(minimax_pruning, white=white, black=black, player=player, depth=depth, heuristic=heuristic) for white, black, player in tqdm.tqdm(init)]
+        mem_minimax_pruning = [track_memory(minimax_pruning, white=white, black=black, player=player, depth=depth, heuristic=eval_no_heuristic) for white, black, player in tqdm.tqdm(init)]
         tracemalloc.stop()
 
         data['minimaxTime'][i] = np.mean(time_minimax)
@@ -75,14 +74,13 @@ def heuristics():
     start_depth = 3
     length = max_depth - start_depth + 1
     num_reps = 5
-    eval_fn = functools.partial(eval, fn=None)
     names = [f'Depth{i}' for i in range(start_depth, max_depth + 1)]
     data = {
         'noCutoffTime'  : [0] * length, 'CutoffTime'  : [0] * length,
         'noCutoffMemory': [0] * length, 'CutoffMemory': [0] * length
     }
-    no_cutoff = functools.partial(minimax_no_cutoff, heuristic=eval_fn)
-    cutoff = functools.partial(minimax_cutoff, heuristic=eval_fn)
+    no_cutoff = functools.partial(minimax_no_cutoff, heuristic=eval_no_heuristic)
+    cutoff = functools.partial(alpha_beta_cutoff, heuristic=eval_no_heuristic)
 
     init = [generate_initial_state() for _ in range(num_reps)]
 

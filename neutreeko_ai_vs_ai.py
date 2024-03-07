@@ -6,7 +6,8 @@ from monte_carlo import mcts
 import numpy as np
 import argparse
 import functools
-from utils import eval_alignment, eval
+from heuristics import eval, eval_alignment
+
 eval_basic = functools.partial(eval, fn=None)
 
 

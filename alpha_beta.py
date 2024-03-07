@@ -1,5 +1,6 @@
 from utils import Node
-from minmax import eval, is_terminal, possible_moves, perform_action, update_played_moves, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
+from minmax import is_terminal, possible_moves, perform_action, update_played_moves
+from heuristics import eval, eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
 import math
 import time
 
