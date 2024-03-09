@@ -35,7 +35,7 @@ def min_value(node: Node, player: str, alpha: float, beta: float, played_moves: 
 
 
 @update_played_moves
-def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 7, heuristic=eval_no_heuristic):
+def minimax_pruning(white: set, black: set, player: str, played_moves: dict | None = None, depth: int = 9, heuristic=eval_no_heuristic):
     node = Node(white=white, black=black, depth=depth, current_player=player)
     return max_value(node, player, -math.inf, math.inf, played_moves, _first=True, heuristic=heuristic)
 
@@ -43,7 +43,7 @@ def minimax_pruning(white: set, black: set, player: str, played_moves: dict | No
 if __name__ == '__main__':
     t0 = time.time()
 
-    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=4)
+    _value, _move, _played_moves = minimax_pruning({1, 3, 17}, {7, 21, 23}, 'Black', depth=9)
 
     #-------------------no heuristic-------------------
 

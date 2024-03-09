@@ -71,7 +71,7 @@ eval_no_heuristic = functools.partial(eval, fn=None)
 def cutoff_test(node, played_moves, first=False):
     if is_terminal(node, played_moves, first):
         return True
-    elif eval_mobility_alignment(node, node.current_player, played_moves, first) < -0.5 and not first:
+    elif eval_mobility_alignment(node, node.current_player, played_moves, first) < -0.25 and not first:
         return True
     else:
         return False

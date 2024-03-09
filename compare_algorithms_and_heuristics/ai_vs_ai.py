@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from algorithms.minmax import minimax
 from algorithms.heuristics import eval_mobility, eval_alignment, eval_mobility_alignment, eval_no_heuristic
 from algorithms.alpha_beta import minimax_pruning
@@ -70,7 +76,7 @@ minimax_pruning_mobility_alignment = functools.partial(minimax_pruning, heuristi
 last_prunning_no_heuristic = functools.partial(alpha_beta_cutoff, heuristic=eval_no_heuristic)
 
 if __name__ == '__main__':
-    r, np = get_statistics(minimax, minimax_pruning, 50)
+    #r, np = get_statistics(minimax, minimax_pruning, 50)
     #r, np = get_statistics_deterministic(minimax, minimax_pruning_no_heuristic)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_mobility)
     #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, minimax_pruning_alignment)
@@ -78,7 +84,8 @@ if __name__ == '__main__':
     #r, np = get_statistics_deterministic(minimax_pruning_mobility, minimax_pruning_alignment)
     #r, np = get_statistics_deterministic(minimax_pruning_mobility, minimax_pruning_mobility_alignment)
     #r, np = get_statistics_deterministic(minimax_pruning_alignment, minimax_pruning_mobility_alignment)
-    #r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, last_prunning_no_heuristic)
+    r, np = get_statistics_deterministic(minimax_pruning_no_heuristic, last_prunning_no_heuristic)
+    from IPython import embed; embed()
 
     #r, np = get_statistics(minimax_pruning_no_heuristic, mcts, 50)
 

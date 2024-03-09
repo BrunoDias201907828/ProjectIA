@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the parent directory to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import functools
 from algorithms.minmax import minimax
 from algorithms.alpha_beta import minimax_pruning
